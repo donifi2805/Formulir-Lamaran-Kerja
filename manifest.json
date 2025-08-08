@@ -1,0 +1,17 @@
+{
+  "name": "System Terpadu Ketenagakerjaan Kabupaten Pati (STPKKP)",
+  "short_name": "STPKKP",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#3b82f6",
+  "description": "Aplikasi pendaftaran kerja dan pengecekan status lamaran Dinas Ketenagakerjaan Kabupaten Pati.",
+  "icons": [
+    {
+      "src": "pati512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
