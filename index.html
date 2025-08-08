@@ -24,7 +24,7 @@
         .preview-container { position: relative; display: none; }
         .live-preview-img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid #e5e7eb; }
         .delete-btn { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; background-color: #ef4444; color: white; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid white; }
-        #choiceModal, #cameraModal, #previewModal, #adminDetailModal, #qrisModal { display: none; }
+        #choiceModal, #cameraModal, #previewModal, #adminDetailModal, #qrisModal, #fullQrisModal { display: none; }
         .hidden-page { display: none; }
         .menu-card { background-color: white; border-radius: 0.75rem; padding: 1.5rem; border: 1px solid #e5e7eb; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
         .menu-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
@@ -98,7 +98,7 @@
                 <button type="button" class="back-to-menu mt-4 sm:mt-0 text-sm text-blue-600 font-semibold p-2">Keluar & Kembali ke Menu</button>
             </div>
             <div class="mb-4">
-                 <input type="text" id="adminSearchInput" class="input-ultracompact w-full max-w-xs text-sm p-2" placeholder="Cari nama atau kode...">
+                <input type="text" id="adminSearchInput" class="input-ultracompact w-full max-w-xs text-sm p-2" placeholder="Cari nama atau kode...">
             </div>
             <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
                 <table id="applicationsTable" class="admin-table ultracompact-font">
@@ -116,7 +116,7 @@
                         <!-- Data akan dimuat di sini oleh JavaScript -->
                     </tbody>
                 </table>
-                 <div id="adminLoadingState" class="text-center p-10 text-gray-500"></div>
+                <div id="adminLoadingState" class="text-center p-10 text-gray-500"></div>
             </div>
         </div>
     </div>
@@ -201,7 +201,7 @@
         <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
             <div class="p-4 border-b flex justify-between items-center">
                 <h2 id="detailModalTitle" class="text-lg font-bold">Detail Pelamar</h2>
-                <button id="closeDetailModalBtn" class="text-gray-400 hover:text-gray-600">&times;</button>
+                <button id="closeDetailModalBtn" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
             <div id="detailModalContent" class="p-6 space-y-4 overflow-y-auto">
                 <!-- Konten detail akan dimuat di sini -->
@@ -216,7 +216,8 @@
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/QRIS_logo.svg" alt="QRIS Logo" class="h-8 mx-auto">
             </div>
             <div class="p-6 bg-gray-50 text-center">
-                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjzDPbhz4wHREgv0Eq3iy9lPdf5UtXd7pS24KL-Nc_FqT9LdRR8vF0ax_xk1l40lHg86_qpkKNWSOlp0WagxI0_rRXGeVTN7MU5jjHrFEipDfs0ysPNZDz2IWgjAUe92WDlZjR5Gx2E15xTzzElrygZCszZUP-Dps-db4O95ZSFD6GKV2Qkes5SYWTo1Lk/s1600/IMG_20250629_202856.jpg" alt="QR Code" class="w-48 h-48 mx-auto border-4 border-white shadow-md">
+                <!-- MODIFIKASI: Menambahkan ID dan cursor-pointer -->
+                <img id="qrisImage" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjzDPbhz4wHREgv0Eq3iy9lPdf5UtXd7pS24KL-Nc_FqT9LdRR8vF0ax_xk1l40lHg86_qpkKNWSOlp0WagxI0_rRXGeVTN7MU5jjHrFEipDfs0ysPNZDz2IWgjAUe92WDlZjR5Gx2E15xTzzElrygZCszZUP-Dps-db4O95ZSFD6GKV2Qkes5SYWTo1Lk/s1600/IMG_20250629_202856.jpg" alt="QR Code" class="w-48 h-48 mx-auto border-4 border-white shadow-md cursor-pointer">
                 <p class="mt-4 text-sm font-semibold text-gray-700">Harap di bayarkan maximal 1x24jam</p>
                 <div id="countdownTimer" class="mt-2 text-xl font-mono font-bold text-gray-800 tracking-wider"></div>
                 <p class="mt-2 text-sm font-semibold text-gray-700">Jumlah Pembayaran:</p>
@@ -226,6 +227,12 @@
                 <button id="closeQrisModalBtn" class="w-full px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-md hover:bg-gray-700">Tutup</button>
             </div>
         </div>
+    </div>
+    
+    <!-- BARU: Modal untuk QRIS Ukuran Penuh -->
+    <div id="fullQrisModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-60">
+        <button id="closeFullQrisBtn" class="absolute top-4 right-4 text-white text-5xl font-bold leading-none hover:text-gray-300 z-10">&times;</button>
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjzDPbhz4wHREgv0Eq3iy9lPdf5UtXd7pS24KL-Nc_FqT9LdRR8vF0ax_xk1l40lHg86_qpkKNWSOlp0WagxI0_rRXGeVTN7MU5jjHrFEipDfs0ysPNZDz2IWgjAUe92WDlZjR5Gx2E15xTzzElrygZCszZUP-Dps-db4O95ZSFD6GKV2Qkes5SYWTo1Lk/s1600/IMG_20250629_202856.jpg" alt="Full QR Code" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg">
     </div>
 
 
@@ -284,6 +291,11 @@
         const qrisModal = document.getElementById('qrisModal');
         const closeQrisModalBtn = document.getElementById('closeQrisModalBtn');
         const countdownTimer = document.getElementById('countdownTimer');
+        
+        // --- ELEMEN DOM BARU ---
+        const qrisImage = document.getElementById('qrisImage');
+        const fullQrisModal = document.getElementById('fullQrisModal');
+        const closeFullQrisBtn = document.getElementById('closeFullQrisBtn');
 
         // --- STATE & KONFIGURASI ---
         const BOT_TOKEN = '8066046272:AAGxVYbiLGIMpJdShz5MS_-S4Im4UB93yjk';
@@ -471,19 +483,26 @@
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                const milliseconds = distance % 1000;
-
+                
                 countdownTimer.innerHTML = 
                     String(hours).padStart(2, '0') + ":" + 
                     String(minutes).padStart(2, '0') + ":" + 
-                    String(seconds).padStart(2, '0') + "." + 
-                    String(milliseconds).padStart(3, '0');
-            }, 47); // Update frequently for smooth milliseconds
+                    String(seconds).padStart(2, '0');
+            }, 1000);
         }
 
         closeQrisModalBtn.addEventListener('click', () => {
             qrisModal.style.display = 'none';
             if (countdownInterval) clearInterval(countdownInterval);
+        });
+
+        // --- FUNGSI MODAL QRIS BARU ---
+        qrisImage.addEventListener('click', () => {
+            fullQrisModal.style.display = 'flex';
+        });
+
+        closeFullQrisBtn.addEventListener('click', () => {
+            fullQrisModal.style.display = 'none';
         });
 
         // --- FUNGSI ALAMAT, UNGGAH, KAMERA, PRATINJAU ---
@@ -613,7 +632,7 @@
                     
                     const progressWidth = currentStageIndex * 35; 
                     let trackerHTML = `<div class="status-tracker">
-                                        <div id="status-progress-bar" style="width: ${progressWidth}%;"></div>`;
+                                            <div id="status-progress-bar" style="width: ${progressWidth}%;"></div>`;
                     stages.forEach((stage, index) => {
                         let stepClass = 'status-step';
                         let label = stage.label;
@@ -693,7 +712,7 @@
             document.querySelectorAll('.auto-resize-textarea').forEach(textarea => { textarea.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'; }); });
         });
         
-        function setLoading(isLoading, button, text) { button.disabled = isLoading; button.innerHTML = isLoading ? `<span class="animate-pulse">${text}...</span>` : text.replace('...', ''); }
+        function setLoading(isLoading, button, text) { button.disabled = isLoading; button.innerHTML = isLoading ? `<span class="animate-pulse">${text.replace('...', '')}...</span>` : text; }
         function showError(msg) { statusMessage.textContent = msg; statusMessage.className = 'mt-2 text-center text-xs font-medium h-4 text-red-600'; }
         function showSuccess(msg) { statusMessage.textContent = msg; statusMessage.className = 'mt-2 text-center text-xs font-medium h-4 text-green-600'; }
     </script>
