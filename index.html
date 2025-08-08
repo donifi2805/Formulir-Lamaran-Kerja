@@ -66,6 +66,8 @@
         .status-diproses { background-color: #fef3c7; color: #92400e; }
         .status-diterima { background-color: #dcfce7; color: #166534; }
         .status-ditolak { background-color: #fee2e2; color: #991b1b; }
+        .status-bayar-belum { background-color: #fee2e2; color: #991b1b; }
+        .status-bayar-sudah { background-color: #dcfce7; color: #166534; }
     </style>
 </head>
 <body class="bg-slate-50">
@@ -79,7 +81,7 @@
                  <p class="text-base text-gray-600 mt-2 mb-8">Temukan & lacak kesempatan karir Anda bersama kami.</p>
                  <div class="space-y-4">
                      <div id="goToRegisterBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-blue-100 text-blue-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Daftar Pekerjaan</h2><p class="text-sm text-gray-500 mt-1">Isi formulir untuk melamar pekerjaan di lokasi yang tersedia.</p></div></div>
-                     <div id="goToCheckStatusBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-green-100 text-green-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Cek Kode Pendaftaran</h2><p class="text-sm text-gray-500 mt-1">Periksa status lamaran Anda menggunakan kode unik.</p></div></div>
+                     <div id="goToCheckStatusBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-green-100 text-green-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Cek Status Lamaran</h2><p class="text-sm text-gray-500 mt-1">Periksa status lamaran Anda menggunakan NIK KTP.</p></div></div>
                  </div>
                  <p class="text-xs text-gray-400 mt-10">&copy; 2024 Portal Karir. <a href="#" id="adminLoginLink" class="underline">Admin</a></p>
              </div>
@@ -110,7 +112,7 @@
                 <button type="button" class="back-to-menu mt-4 sm:mt-0 text-sm text-blue-600 font-semibold p-2">Keluar & Kembali ke Menu</button>
             </div>
             <div class="mb-4">
-                <input type="text" id="adminSearchInput" class="input-ultracompact w-full max-w-xs text-sm p-2" placeholder="Cari nama atau kode...">
+                <input type="text" id="adminSearchInput" class="input-ultracompact w-full max-w-xs text-sm p-2" placeholder="Cari nama atau NIK...">
             </div>
             <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
                 <table id="applicationsTable" class="admin-table ultracompact-font">
@@ -118,9 +120,11 @@
                         <tr>
                             <th class="whitespace-nowrap">Pelamar</th>
                             <th class="whitespace-nowrap">Perusahaan</th>
-                            <th class="whitespace-nowrap">Tanggal Daftar</th>
-                            <th class="whitespace-nowrap">Status</th>
-                            <th class="whitespace-nowrap">Ubah Status</th>
+                            <th class="whitespace-nowrap">Tgl Daftar</th>
+                            <th class="whitespace-nowrap">Status Lamaran</th>
+                            <th class="whitespace-nowrap">Status Bayar</th>
+                            <th class="whitespace-nowrap">Ubah Status Lamaran</th>
+                            <th class="whitespace-nowrap">Ubah Status Bayar</th>
                             <th class="whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>
@@ -140,8 +144,8 @@
                 <button type="button" class="back-to-menu text-sm text-blue-600 font-semibold p-2 -ml-2">&lt; Kembali ke Menu</button>
                 <h1 class="text-xl font-bold text-center text-gray-800 mb-4">Cek Status Lamaran</h1>
                 <div class="space-y-3">
-                    <input type="text" id="kodeInput" class="input-ultracompact w-full text-base p-2" placeholder="Masukkan kode pendaftaran contoh: REG-73BMEH">
-                    <button id="checkStatusCodeBtn" class="w-full bg-green-600 text-white font-semibold py-2 rounded-md hover:bg-green-700 text-sm">Cek Status</button>
+                    <input type="number" id="nikInput" class="input-ultracompact w-full text-base p-2" placeholder="Masukkan NIK KTP Anda (16 digit)...">
+                    <button id="checkStatusNikBtn" class="w-full bg-green-600 text-white font-semibold py-2 rounded-md hover:bg-green-700 text-sm">Cek Status</button>
                 </div>
                 <div id="statusResult" class="mt-6 border-t pt-6"></div>
             </div>
@@ -175,7 +179,10 @@
                 </div>
                 <form id="jobApplicationForm" novalidate class="mt-1">
                     <input type="hidden" id="selectedCompany" name="Perusahaan Dilamar">
-                    <fieldset class="border-t border-gray-200 pt-2"><legend class="text-sm font-semibold text-gray-900">Data Diri</legend><div class="grid grid-cols-2 gap-x-2 gap-y-2 mt-1"><div class="col-span-2"><label for="namaLengkap" class="label-ultracompact">Nama Lengkap</label><input type="text" id="namaLengkap" name="Nama Lengkap" class="input-ultracompact" required></div><div><label for="tempatLahir" class="label-ultracompact">Tempat Lahir</label><input type="text" id="tempatLahir" name="Tempat Lahir" placeholder="Kota" class="input-ultracompact" required></div><div><label for="tanggalLahir" class="label-ultracompact">Tgl. Lahir</label><input type="date" id="tanggalLahir" name="Tanggal Lahir" class="input-ultracompact" required></div><div><label for="telepon" class="label-ultracompact">Telepon (WA)</label><input type="tel" id="telepon" name="Nomor Telepon" placeholder="08..." class="input-ultracompact" required></div><div><label for="email" class="label-ultracompact">Email</label><input type="email" id="email" name="Alamat Email" class="input-ultracompact" required></div></div></fieldset>
+                    <fieldset class="border-t border-gray-200 pt-2"><legend class="text-sm font-semibold text-gray-900">Data Diri</legend><div class="grid grid-cols-2 gap-x-2 gap-y-2 mt-1">
+                        <div class="col-span-2"><label for="namaLengkap" class="label-ultracompact">Nama Lengkap</label><input type="text" id="namaLengkap" name="Nama Lengkap" class="input-ultracompact" required></div>
+                        <div class="col-span-2"><label for="nik" class="label-ultracompact">NIK KTP (16 Digit)</label><input type="text" id="nik" name="NIK KTP" class="input-ultracompact" required pattern="\d{16}" title="NIK harus terdiri dari 16 digit angka."></div>
+                        <div><label for="tempatLahir" class="label-ultracompact">Tempat Lahir</label><input type="text" id="tempatLahir" name="Tempat Lahir" placeholder="Kota" class="input-ultracompact" required></div><div><label for="tanggalLahir" class="label-ultracompact">Tgl. Lahir</label><input type="date" id="tanggalLahir" name="Tanggal Lahir" class="input-ultracompact" required></div><div><label for="telepon" class="label-ultracompact">Telepon (WA)</label><input type="tel" id="telepon" name="Nomor Telepon" placeholder="08..." class="input-ultracompact" required></div><div><label for="email" class="label-ultracompact">Email</label><input type="email" id="email" name="Alamat Email" class="input-ultracompact" required></div></div></fieldset>
                     <fieldset class="border-t border-gray-200 pt-2 mt-3"><legend class="text-sm font-semibold text-gray-900">Alamat Lengkap</legend><div class="grid grid-cols-2 gap-x-2 gap-y-2 mt-1"><div><label for="provinsi" class="label-ultracompact">Provinsi</label><select id="provinsi" name="Provinsi" class="input-ultracompact" required></select></div><div><label for="kota" class="label-ultracompact">Kota/Kabupaten</label><select id="kota" name="Kota/Kabupaten" class="input-ultracompact" required disabled></select></div><div><label for="kecamatan" class="label-ultracompact">Kecamatan</label><select id="kecamatan" name="Kecamatan" class="input-ultracompact" required disabled></select></div><div><label for="kelurahan" class="label-ultracompact">Kelurahan/Desa</label><select id="kelurahan" name="Kelurahan/Desa" class="input-ultracompact" required disabled></select></div><div class="col-span-2"><label for="detailAlamat" class="label-ultracompact">Detail Alamat</label><textarea id="detailAlamat" name="Detail Alamat" rows="2" class="input-ultracompact auto-resize-textarea" placeholder="Contoh: Jl. Merdeka No. 15, RT 01/RW 02" required></textarea></div></div></fieldset>
                     <fieldset class="border-t border-gray-200 pt-2 mt-3"><legend class="text-sm font-semibold text-gray-900">Pendidikan & Keahlian</legend><div class="grid grid-cols-2 gap-x-2 gap-y-2 mt-1"><div><label for="pendidikan" class="label-ultracompact">Terakhir</label><select id="pendidikan" name="Pendidikan Terakhir" class="input-ultracompact" required><option value="" disabled selected>Pilih...</option><option value="SMA/SMK">SMA/SMK</option><option value="Diploma">Diploma</option><option value="S1">S1</option><option value="S2">S2/S3</option></select></div><div><label for="jurusan" class="label-ultracompact">Jurusan</label><input type="text" id="jurusan" name="Jurusan" class="input-ultracompact" required></div><div class="col-span-2"><label for="pengalaman" class="label-ultracompact">Pengalaman Kerja</label><textarea id="pengalaman" name="Pengalaman Kerja" rows="1" placeholder="Jelaskan dengan jelas" class="input-ultracompact auto-resize-textarea" required></textarea></div><div class="col-span-2"><label for="keterampilan" class="label-ultracompact">Keahlian</label><textarea id="keterampilan" name="Keterampilan/Keahlian" rows="1" placeholder="Contoh: MS Office, Desain..." class="input-ultracompact auto-resize-textarea" required></textarea></div></div></fieldset>
                     <fieldset class="border-t border-gray-200 pt-2 mt-3"><legend class="text-sm font-semibold text-gray-900">Dokumen</legend><div class="grid grid-cols-2 gap-4 mt-1"><div class="space-y-1"><label class="label-ultracompact text-center">Foto KTP</label><div id="upload-box-fotoKTP" class="upload-placeholder" data-target="fotoKTP"><svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span class="text-xs text-gray-500 mt-1">Unggah File</span></div><div id="preview-container-fotoKTP" class="preview-container"><img id="live-preview-fotoKTP" class="live-preview-img" data-target="fotoKTP"><button type="button" class="delete-btn" onclick="deleteFile('fotoKTP')">&times;</button></div><input type="file" id="file-fotoKTP" data-target="fotoKTP" class="file-input" accept="image/*"></div><div class="space-y-1"><label class="label-ultracompact text-center">Foto Kartu Keluarga</label><div id="upload-box-fotoKK" class="upload-placeholder" data-target="fotoKK"><svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span class="text-xs text-gray-500 mt-1">Unggah File</span></div><div id="preview-container-fotoKK" class="preview-container"><img id="live-preview-fotoKK" class="live-preview-img" data-target="fotoKK"><button type="button" class="delete-btn" onclick="deleteFile('fotoKK')">&times;</button></div><input type="file" id="file-fotoKK" data-target="fotoKK" class="file-input" accept="image/*"></div><div class="space-y-1"><label class="label-ultracompact text-center">Foto Ijazah</label><div id="upload-box-fotoIjazah" class="upload-placeholder" data-target="fotoIjazah"><svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span class="text-xs text-gray-500 mt-1">Unggah File</span></div><div id="preview-container-fotoIjazah" class="preview-container"><img id="live-preview-fotoIjazah" class="live-preview-img" data-target="fotoIjazah"><button type="button" class="delete-btn" onclick="deleteFile('fotoIjazah')">&times;</button></div><input type="file" id="file-fotoIjazah" data-target="fotoIjazah" class="file-input" accept="image/*"></div><div class="space-y-1"><label class="label-ultracompact text-center">Foto Wajah</label><div id="upload-box-fotoWajah" class="upload-placeholder" data-target="fotoWajah"><svg class="h-6 w-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span class="text-xs text-gray-500 mt-1">Unggah File</span></div><div id="preview-container-fotoWajah" class="preview-container"><img id="live-preview-fotoWajah" class="live-preview-img" data-target="fotoWajah"><button type="button" class="delete-btn" onclick="deleteFile('fotoWajah')">&times;</button></div><input type="file" id="file-fotoWajah" data-target="fotoWajah" class="file-input" accept="image/*"></div></div></fieldset>
@@ -192,11 +199,11 @@
             <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
                 <h1 class="text-xl font-bold text-green-600">Pendaftaran Berhasil!</h1>
                 <div class="my-6 p-3 bg-gray-100 border-dashed border-2 border-gray-300 rounded-lg">
-                    <p class="text-sm text-gray-500">Kode Pendaftaran Anda:</p>
-                    <p id="registrationCodeDisplay" class="text-2xl font-bold text-gray-800 tracking-widest"></p>
+                    <p class="text-sm text-gray-500">NIK KTP Anda:</p>
+                    <p id="nikDisplay" class="text-2xl font-bold text-gray-800 tracking-widest"></p>
                 </div>
                 <p class="text-sm text-gray-600 mt-4">
-                    Harap simpan kode pendaftaran ini baik-baik untuk mengecek status pendaftaran Anda. Jika diterima, perusahaan akan menghubungi nomor WhatsApp Anda.
+                    Harap gunakan NIK KTP Anda untuk mengecek status pendaftaran. Jika diterima, perusahaan akan menghubungi nomor WhatsApp Anda.
                 </p>
                 <button class="back-to-menu w-full mt-6 bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 text-sm">Kembali ke Menu Utama</button>
             </div>
@@ -250,7 +257,7 @@
     <script type="module">
         // --- Import Firebase ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, where, getDocs, doc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, where, getDocs, doc, updateDoc, orderBy, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
         // --- Konfigurasi Firebase ---
         const firebaseConfig = {
@@ -284,9 +291,9 @@
         const choiceModal = document.getElementById('choiceModal'), galleryButton = document.getElementById('galleryButton'), cameraButton = document.getElementById('cameraButton'), cancelChoiceButton = document.getElementById('cancelChoiceButton');
         const cameraModal = document.getElementById('cameraModal'), cameraFeed = document.getElementById('cameraFeed'), cameraCanvas = document.getElementById('cameraCanvas'), captureButton = document.getElementById('captureButton'), closeCameraButton = document.getElementById('closeCameraButton');
         const previewModal = document.getElementById('previewModal'), editButton = document.getElementById('editButton'), sendButton = document.getElementById('sendButton'), previewTextData = document.getElementById('previewTextData');
-        const registrationCodeDisplay = document.getElementById('registrationCodeDisplay');
-        const kodeInput = document.getElementById('kodeInput');
-        const checkStatusCodeBtn = document.getElementById('checkStatusCodeBtn');
+        const nikDisplay = document.getElementById('nikDisplay');
+        const nikInput = document.getElementById('nikInput');
+        const checkStatusNikBtn = document.getElementById('checkStatusNikBtn');
         const statusResult = document.getElementById('statusResult');
         const adminLoginLink = document.getElementById('adminLoginLink');
         const adminPasswordInput = document.getElementById('adminPasswordInput');
@@ -360,11 +367,19 @@
                 default: return `<span class="status-badge">${status}</span>`;
             }
         };
+        
+        const getPaymentStatusBadge = (status) => {
+            switch (status) {
+                case 'Belum Dibayar': return `<span class="status-badge status-bayar-belum">Belum Dibayar</span>`;
+                case 'Telah Dibayar': return `<span class="status-badge status-bayar-sudah">Telah Dibayar</span>`;
+                default: return `<span class="status-badge">${status}</span>`;
+            }
+        };
 
         function renderApplications(data) {
             applicationsList.innerHTML = '';
             if (data.length === 0) {
-                adminLoadingState.innerHTML = `<tr><td colspan="6" class="text-center p-10">Tidak ada data lamaran.</td></tr>`;
+                adminLoadingState.innerHTML = `<tr><td colspan="8" class="text-center p-10">Tidak ada data lamaran.</td></tr>`;
                 return;
             }
             adminLoadingState.textContent = '';
@@ -373,17 +388,24 @@
                 row.innerHTML = `
                     <td class="whitespace-nowrap">
                         <div class="font-bold text-gray-800">${appData.nama}</div>
-                        <div class="text-xs text-gray-500">${appData.kodePendaftaran}</div>
+                        <div class="text-xs text-gray-500">${appData.nik}</div>
                     </td>
                     <td class="whitespace-nowrap">${appData.perusahaan}</td>
                     <td class="whitespace-nowrap">${new Date(appData.timestamp.seconds * 1000).toLocaleDateString('id-ID')}</td>
                     <td class="whitespace-nowrap">${getStatusBadge(appData.status)}</td>
+                    <td class="whitespace-nowrap">${getPaymentStatusBadge(appData.statusPembayaran)}</td>
                     <td class="whitespace-nowrap">
                         <select class="status-select input-ultracompact" data-doc-id="${appData.id}">
-                            <option value="Lamaran Diajukan" ${appData.status === 'Lamaran Diajukan' ? 'selected' : ''}>Lamaran Diajukan</option>
-                            <option value="Sedang Diproses" ${appData.status === 'Sedang Diproses' ? 'selected' : ''}>Sedang Diproses</option>
+                            <option value="Lamaran Diajukan" ${appData.status === 'Lamaran Diajukan' ? 'selected' : ''}>Diajukan</option>
+                            <option value="Sedang Diproses" ${appData.status === 'Sedang Diproses' ? 'selected' : ''}>Diproses</option>
                             <option value="Diterima" ${appData.status === 'Diterima' ? 'selected' : ''}>Diterima</option>
                             <option value="Ditolak" ${appData.status === 'Ditolak' ? 'selected' : ''}>Ditolak</option>
+                        </select>
+                    </td>
+                     <td class="whitespace-nowrap">
+                        <select class="payment-status-select input-ultracompact" data-doc-id="${appData.id}">
+                            <option value="Belum Dibayar" ${appData.statusPembayaran === 'Belum Dibayar' ? 'selected' : ''}>Belum Dibayar</option>
+                            <option value="Telah Dibayar" ${appData.statusPembayaran === 'Telah Dibayar' ? 'selected' : ''}>Telah Dibayar</option>
                         </select>
                     </td>
                     <td class="whitespace-nowrap">
@@ -398,6 +420,11 @@
                     await updateStatus(e.target.dataset.docId, e.target.value);
                 });
             });
+            document.querySelectorAll('.payment-status-select').forEach(select => {
+                select.addEventListener('change', async (e) => {
+                    await updatePaymentStatus(e.target.dataset.docId, e.target.value);
+                });
+            });
             document.querySelectorAll('.view-detail-btn').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const applicant = allApplicationsData.find(app => app.id === e.target.dataset.id);
@@ -407,7 +434,7 @@
         }
 
         async function loadApplications() {
-            adminLoadingState.innerHTML = `<tr><td colspan="6" class="text-center p-10">Memuat data pendaftar...</td></tr>`;
+            adminLoadingState.innerHTML = `<tr><td colspan="8" class="text-center p-10">Memuat data pendaftar...</td></tr>`;
             applicationsList.innerHTML = '';
             try {
                 const q = query(collection(db, "pendaftaran"), orderBy("timestamp", "desc"));
@@ -415,7 +442,7 @@
                 allApplicationsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderApplications(allApplicationsData);
             } catch (error) {
-                adminLoadingState.innerHTML = `<tr><td colspan="6" class="text-center p-10 text-red-500">Gagal memuat data.</td></tr>`;
+                adminLoadingState.innerHTML = `<tr><td colspan="8" class="text-center p-10 text-red-500">Gagal memuat data.</td></tr>`;
                 console.error("Error loading applications: ", error);
             }
         }
@@ -424,7 +451,7 @@
             const searchTerm = e.target.value.toLowerCase();
             const filteredData = allApplicationsData.filter(app => 
                 app.nama.toLowerCase().includes(searchTerm) || 
-                app.kodePendaftaran.toLowerCase().includes(searchTerm)
+                app.nik.toLowerCase().includes(searchTerm)
             );
             renderApplications(filteredData);
         });
@@ -435,12 +462,17 @@
             const index = allApplicationsData.findIndex(app => app.id === docId);
             if (index > -1) {
                 allApplicationsData[index].status = newStatus;
-                const searchTerm = adminSearchInput.value.toLowerCase();
-                const filteredData = allApplicationsData.filter(app => 
-                    app.nama.toLowerCase().includes(searchTerm) || 
-                    app.kodePendaftaran.toLowerCase().includes(searchTerm)
-                );
-                renderApplications(filteredData);
+                renderApplications(allApplicationsData.filter(app => adminSearchInput.value ? (app.nama.toLowerCase().includes(adminSearchInput.value.toLowerCase()) || app.nik.includes(adminSearchInput.value)) : true));
+            }
+        }
+        
+        async function updatePaymentStatus(docId, newStatus) {
+            const docRef = doc(db, "pendaftaran", docId);
+            await updateDoc(docRef, { statusPembayaran: newStatus });
+            const index = allApplicationsData.findIndex(app => app.id === docId);
+            if (index > -1) {
+                allApplicationsData[index].statusPembayaran = newStatus;
+                renderApplications(allApplicationsData.filter(app => adminSearchInput.value ? (app.nama.toLowerCase().includes(adminSearchInput.value.toLowerCase()) || app.nik.includes(adminSearchInput.value)) : true));
             }
         }
         
@@ -450,7 +482,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-3">
                         <h3 class="font-bold text-base border-b pb-2">Data Pribadi</h3>
-                        <p><strong class="w-28 inline-block">Kode:</strong> ${applicant.kodePendaftaran}</p>
+                        <p><strong class="w-28 inline-block">NIK:</strong> ${applicant.nik}</p>
                         <p><strong class="w-28 inline-block">Telepon:</strong> ${applicant.telepon}</p>
                         <p><strong class="w-28 inline-block">Email:</strong> ${applicant.email}</p>
                         <p><strong class="w-28 inline-block">Lahir:</strong> ${applicant.tempatLahir}, ${applicant.tanggalLahir}</p>
@@ -546,7 +578,7 @@
         document.querySelectorAll('.file-input').forEach(input => { input.addEventListener('change', function() { handleFile(this.dataset.target, this.files[0]); }); });
         
         // --- FUNGSI SUBMISI & PRATINJAU ---
-        form.addEventListener('submit', function(event) { event.preventDefault(); if (!form.checkValidity() || Object.keys(capturedFiles).length < 4) { showError('Isi semua kolom & unggah semua dokumen.'); return; } showPreviewModal(); });
+        form.addEventListener('submit', function(event) { event.preventDefault(); if (!form.checkValidity() || Object.keys(capturedFiles).length < 4) { showError('Isi semua kolom, unggah semua dokumen, dan pastikan NIK 16 digit.'); return; } showPreviewModal(); });
         function showPreviewModal() {
             previewTextData.innerHTML = '';
             const formData = new FormData(form);
@@ -554,31 +586,40 @@
             const kotaText = kotaSelect.options[kotaSelect.selectedIndex]?.text || '';
             const kecText = kecamatanSelect.options[kecamatanSelect.selectedIndex]?.text || '';
             const kelText = kelurahanSelect.options[kelurahanSelect.selectedIndex]?.text || '';
-            const data = { "Melamar di": formData.get('Perusahaan Dilamar'), "Nama Lengkap": formData.get('Nama Lengkap'), "Tempat/Tgl Lahir": `${formData.get('Tempat Lahir')} / ${formData.get('Tanggal Lahir')}`, "Kontak": `${formData.get('Nomor Telepon')} | ${formData.get('Alamat Email')}`, "Alamat": `${formData.get('Detail Alamat')}, ${kelText}, ${kecText}, ${kotaText}, ${provText}`, "Pendidikan": `${formData.get('Pendidikan Terakhir')} - ${formData.get('Jurusan')}`, "Pengalaman": formData.get('Pengalaman Kerja'), "Keahlian": formData.get('Keterampilan/Keahlian'), };
+            const data = { "Melamar di": formData.get('Perusahaan Dilamar'), "Nama Lengkap": formData.get('Nama Lengkap'), "NIK KTP": formData.get('NIK KTP'), "Tempat/Tgl Lahir": `${formData.get('Tempat Lahir')} / ${formData.get('Tanggal Lahir')}`, "Kontak": `${formData.get('Nomor Telepon')} | ${formData.get('Alamat Email')}`, "Alamat": `${formData.get('Detail Alamat')}, ${kelText}, ${kecText}, ${kotaText}, ${provText}`, "Pendidikan": `${formData.get('Pendidikan Terakhir')} - ${formData.get('Jurusan')}`, "Pengalaman": formData.get('Pengalaman Kerja'), "Keahlian": formData.get('Keterampilan/Keahlian'), };
             for (const [k, v] of Object.entries(data)) { if (v) { const p = document.createElement('p'); p.innerHTML = `<span class="font-semibold">${k}:</span> ${v.replace(/\n/g, '<br>')}`; previewTextData.appendChild(p); } }
             Object.keys(capturedFiles).forEach(key => { const img = document.getElementById(`modal-preview-${key}`); const reader = new FileReader(); reader.onload = e => { img.src = e.target.result; }; reader.readAsDataURL(capturedFiles[key]); });
             previewModal.style.display = 'flex';
         }
         editButton.addEventListener('click', () => { previewModal.style.display = 'none'; });
 
-        function generateRegistrationCode() {
-            const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-            return `REG-${randomPart}`;
-        }
-
         sendButton.addEventListener('click', async () => {
             setLoading(true, sendButton, 'Mengirim...');
             try {
                 const formData = new FormData(form);
+                const nik = formData.get('NIK KTP');
+
+                // Cek apakah NIK sudah terdaftar
+                const q = query(collection(db, "pendaftaran"), where("nik", "==", nik));
+                const querySnapshot = await getDocs(q);
+                
+                let existingPaymentStatus = "Belum Dibayar";
+                let docIdToUpdate = null;
+
+                if (!querySnapshot.empty) {
+                    const existingDoc = querySnapshot.docs[0];
+                    existingPaymentStatus = existingDoc.data().statusPembayaran || "Belum Dibayar";
+                    docIdToUpdate = existingDoc.id;
+                }
+
                 const provText = provinsiSelect.options[provinsiSelect.selectedIndex]?.text || '';
                 const kotaText = kotaSelect.options[kotaSelect.selectedIndex]?.text || '';
                 const kecText = kecamatanSelect.options[kecamatanSelect.selectedIndex]?.text || '';
                 const kelText = kelurahanSelect.options[kelurahanSelect.selectedIndex]?.text || '';
                 const alamatLengkap = `${formData.get('Detail Alamat')}, ${kelText}, ${kecText}, ${kotaText}, ${provText}`;
-                const registrationCode = generateRegistrationCode();
-
+                
                 const dataToSave = {
-                    kodePendaftaran: registrationCode,
+                    nik: nik,
                     perusahaan: formData.get('Perusahaan Dilamar'),
                     nama: formData.get('Nama Lengkap'),
                     tempatLahir: formData.get('Tempat Lahir'),
@@ -591,12 +632,22 @@
                     pengalaman: formData.get('Pengalaman Kerja'),
                     keahlian: formData.get('Keterampilan/Keahlian'),
                     status: "Lamaran Diajukan",
-                    timestamp: new Date()
+                    statusPembayaran: existingPaymentStatus, // Gunakan status pembayaran yang ada atau default
+                    timestamp: serverTimestamp()
                 };
-                await addDoc(collection(db, "pendaftaran"), dataToSave);
 
-                let messageText = `<b>🔔 Lamaran Baru Diterima</b>\n\n<b>Kode:</b> ${registrationCode}\n<b>Perusahaan:</b> ${dataToSave.perusahaan}\n\n<b>Nama:</b> ${dataToSave.nama}\n<b>Kontak:</b> ${dataToSave.telepon}\n<b>Alamat:</b> ${dataToSave.alamat}\n`;
+                if (docIdToUpdate) {
+                    // Jika NIK sudah ada, update data lamaran yang ada
+                    const docRef = doc(db, "pendaftaran", docIdToUpdate);
+                    await updateDoc(docRef, dataToSave);
+                } else {
+                    // Jika NIK baru, tambahkan dokumen baru
+                    await addDoc(collection(db, "pendaftaran"), dataToSave);
+                }
+
+                let messageText = `<b>🔔 Lamaran Baru Diterima/Diperbarui</b>\n\n<b>NIK:</b> ${dataToSave.nik}\n<b>Perusahaan:</b> ${dataToSave.perusahaan}\n\n<b>Nama:</b> ${dataToSave.nama}\n<b>Kontak:</b> ${dataToSave.telepon}\n<b>Status Bayar:</b> ${dataToSave.statusPembayaran}\n`;
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: CHAT_ID, text: messageText, parse_mode: 'HTML' }) });
+                
                 const photoFormData = new FormData();
                 photoFormData.append('chat_id', CHAT_ID);
                 const media = [];
@@ -605,7 +656,7 @@
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, { method: 'POST', body: photoFormData });
                 
                 previewModal.style.display = 'none';
-                registrationCodeDisplay.textContent = registrationCode;
+                nikDisplay.textContent = nik;
                 showPage(successPage);
                 form.reset();
                 capturedFiles = {};
@@ -614,20 +665,20 @@
             } catch (error) { showError(`Terjadi kesalahan.`); console.error(error); } finally { setLoading(false, sendButton, 'Kirim Sekarang'); }
         });
 
-        checkStatusCodeBtn.addEventListener('click', async () => {
-            const code = kodeInput.value.trim().toUpperCase();
+        checkStatusNikBtn.addEventListener('click', async () => {
+            const nik = nikInput.value.trim();
             statusResult.innerHTML = ''; 
-            if (!code) {
-                statusResult.innerHTML = `<p class="text-red-500 text-center">Harap masukkan kode.</p>`;
+            if (!nik || nik.length !== 16) {
+                statusResult.innerHTML = `<p class="text-red-500 text-center">Harap masukkan NIK KTP yang valid (16 digit).</p>`;
                 return;
             }
-            setLoading(true, checkStatusCodeBtn, 'Mencari...');
+            setLoading(true, checkStatusNikBtn, 'Mencari...');
             
             try {
-                const q = query(collection(db, "pendaftaran"), where("kodePendaftaran", "==", code));
+                const q = query(collection(db, "pendaftaran"), where("nik", "==", nik));
                 const querySnapshot = await getDocs(q);
                 if (querySnapshot.empty) {
-                    statusResult.innerHTML = `<p class="text-red-500 text-center">Kode pendaftaran tidak ditemukan.</p>`;
+                    statusResult.innerHTML = `<p class="text-red-500 text-center">NIK tidak ditemukan. Silakan mendaftar terlebih dahulu.</p>`;
                 } else {
                     const docData = querySnapshot.docs[0].data();
                     
@@ -660,7 +711,26 @@
                     trackerHTML += '</div>';
 
                     let contentHTML = '';
-                    if (docData.status === 'Sedang Diproses') {
+                    if (docData.status === 'Ditolak') {
+                        const registrationDate = docData.timestamp.toDate();
+                        const nextWeekDate = new Date(registrationDate.setDate(registrationDate.getDate() + 7));
+                        const formattedNextWeekDate = nextWeekDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                        contentHTML = `
+                            <div class="mt-8 space-y-2 text-sm text-gray-700">
+                                <p><span class="font-semibold w-32 inline-block">Nama:</span> ${docData.nama}</p>
+                                <p><span class="font-semibold w-32 inline-block">Nomor WhatsApp:</span> ${docData.telepon}</p>
+                                <p><span class="font-semibold w-32 inline-block">Email:</span> ${docData.email}</p>
+                            </div>
+                            <div class="mt-6 p-4 bg-red-50 border-l-4 border-red-400 text-red-800 text-sm rounded-r-lg">
+                                <h3 class="font-bold">Pemberitahuan</h3>
+                                <p class="mt-2">Maaf, <strong>${docData.perusahaan}</strong> belum dapat menerima Anda sebagai kandidat calon karyawan baru.</p>
+                                <p class="mt-2">Pendaftaran ulang dapat dilakukan mulai minggu depan, pada tanggal <strong>${formattedNextWeekDate}</strong>.</p>
+                                <p class="mt-2">Anda <strong>tidak perlu melakukan pembayaran administrasi lagi</strong>. Pastikan Anda menyimpan NIK untuk pengecekan selanjutnya.</p>
+                            </div>
+                        `;
+                        statusResult.innerHTML = trackerHTML + contentHTML;
+                    } else if (docData.status === 'Sedang Diproses' && docData.statusPembayaran === 'Belum Dibayar') {
                         contentHTML = `
                             <div class="mt-6 bg-white border border-gray-200 rounded-xl shadow-sm">
                                 <div class="p-4 md:p-5 text-center bg-gray-50 rounded-t-xl">
@@ -684,28 +754,16 @@
                                         </div>
                                     </div>
                                     <div class="mb-6">
-                                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Rincian Biaya Pendaftaran:</h3>
+                                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Rincian Biaya:</h3>
                                         <ul class="space-y-2 text-sm text-gray-600">
-                                            <li class="flex items-start">
-                                                <svg class="flex-shrink-0 mt-0.5 h-4 w-4 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                                <span>Biaya pengajuan pendaftaran resmi.</span>
-                                            </li>
-                                            <li class="flex items-start">
-                                                <svg class="flex-shrink-0 mt-0.5 h-4 w-4 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                                <span>Akomodasi transportasi untuk proses seleksi.</span>
-                                            </li>
-                                            <li class="flex items-start">
-                                                <svg class="flex-shrink-0 mt-0.5 h-4 w-4 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                                <span>Pembuatan dokumen (Daftar Riwayat Hidup, Surat Lamaran, dll).</span>
-                                            </li>
-                                            <li class="flex items-start">
-                                                <svg class="flex-shrink-0 mt-0.5 h-4 w-4 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
-                                                <span>Jasa administrasi senilai Rp 30.000.</span>
-                                            </li>
+                                            <li class="flex items-start"><svg class="flex-shrink-0 mt-0.5 h-4 w-4 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span>Biaya pengajuan pendaftaran resmi.</span></li>
+                                            <li class="flex items-start"><svg class="flex-shrink-0 mt-0.5 h-4 w-4 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span>Akomodasi transportasi untuk proses seleksi.</span></li>
+                                            <li class="flex items-start"><svg class="flex-shrink-0 mt-0.5 h-4 w-4 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span>Pembuatan dokumen (CV, Surat Lamaran, dll).</span></li>
+                                            <li class="flex items-start"><svg class="flex-shrink-0 mt-0.5 h-4 w-4 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg><span>Jasa administrasi senilai Rp 30.000.</span></li>
                                         </ul>
-                                    </div>
-                                    <div class="p-3 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 text-xs rounded-r-lg mb-6">
-                                        <p><strong>Peluang Diterima 80%</strong>: Hasil akhir tergantung pada performa Anda saat wawancara dan masa training.</p>
+                                         <div class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-800 text-xs rounded-r-lg">
+                                            <p><strong>Info:</strong> Pembayaran hanya dilakukan sekali. Jika lamaran ini tidak diterima, status pembayaran Anda akan tetap 'Telah Dibayar' untuk pendaftaran selanjutnya di PT yang berbeda.</p>
+                                        </div>
                                     </div>
                                     <div class="mt-6">
                                         <button id="payButton" class="w-full flex items-center justify-center bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200">
@@ -724,12 +782,11 @@
                     } else {
                         contentHTML = `
                             <div class="mt-8 space-y-2 text-sm text-gray-700">
-                                <p><span class="font-semibold w-32 inline-block">Kode Pendaftaran:</span> ${docData.kodePendaftaran}</p>
+                                <p><span class="font-semibold w-32 inline-block">NIK KTP:</span> ${docData.nik}</p>
                                 <p><span class="font-semibold w-32 inline-block">Nama:</span> ${docData.nama}</p>
-                                <p><span class="font-semibold w-32 inline-block">Nomor WhatsApp:</span> ${docData.telepon}</p>
-                                <p><span class="font-semibold w-32 inline-block">Email:</span> ${docData.email}</p>
-                                <p><span class="font-semibold w-32 inline-block">Alamat:</span> ${docData.alamat}</p>
                                 <p><span class="font-semibold w-32 inline-block">Perusahaan:</span> ${docData.perusahaan}</p>
+                                <p><span class="font-semibold w-32 inline-block">Status Pembayaran:</span> <span class="font-bold ${docData.statusPembayaran === 'Telah Dibayar' ? 'text-green-600' : 'text-red-600'}">${docData.statusPembayaran}</span></p>
+                                <p class="mt-4 text-xs text-gray-500">Silakan pantau status lamaran Anda secara berkala. Anda akan dihubungi melalui WhatsApp jika ada pembaruan lebih lanjut.</p>
                             </div>
                         `;
                         statusResult.innerHTML = trackerHTML + contentHTML;
@@ -739,7 +796,7 @@
                 statusResult.innerHTML = `<p class="text-red-500 text-center">Gagal memeriksa status.</p>`;
                 console.error(error);
             } finally {
-                setLoading(false, checkStatusCodeBtn, 'Cek Status');
+                setLoading(false, checkStatusNikBtn, 'Cek Status');
             }
         });
 
