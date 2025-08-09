@@ -5,19 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Terpadu Ketenagakerjaan Kabupaten Pati (STPKKP)</title>
     
-    <!-- PWA Manifest & Theme -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#3b82f6">
 
-    <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="pati512.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="STPKKP">
 
-    <!-- Memuat Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Memuat Font Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -72,23 +68,21 @@
 </head>
 <body class="bg-slate-50">
 
-    <!-- Halaman 0: Menu Utama Profesional -->
     <div id="mainMenuPage">
-         <div class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100">
-             <div class="w-full max-w-md text-center">
-                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Coat_of_arms_of_Central_Java.svg/1200px-Coat_of_arms_of_Central_Java.svg.png" alt="Logo Jawa Tengah" class="h-24 mx-auto mb-4">
-                 <h1 class="text-xl font-bold text-gray-800">Dinas Ketenaga Kerjaan Kabupaten Pati</h1>
-                 <p class="text-base text-gray-600 mt-2 mb-8">Temukan & lacak kesempatan karir Anda bersama kami.</p>
-                 <div class="space-y-4">
-                     <div id="goToRegisterBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-blue-100 text-blue-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Daftar Pekerjaan</h2><p class="text-sm text-gray-500 mt-1">Isi formulir untuk melamar pekerjaan di lokasi yang tersedia.</p></div></div>
-                     <div id="goToCheckStatusBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-green-100 text-green-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Cek Status Lamaran</h2><p class="text-sm text-gray-500 mt-1">Periksa status lamaran Anda menggunakan NIK KTP.</p></div></div>
-                 </div>
-                 <p class="text-xs text-gray-400 mt-10">&copy; 2024 Portal Karir. <a href="#" id="adminLoginLink" class="underline">Admin</a></p>
-             </div>
-         </div>
+        <div class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100">
+            <div class="w-full max-w-md text-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Coat_of_arms_of_Central_Java.svg/1200px-Coat_of_arms_of_Central_Java.svg.png" alt="Logo Jawa Tengah" class="h-24 mx-auto mb-4">
+                <h1 class="text-xl font-bold text-gray-800">Dinas Ketenaga Kerjaan Kabupaten Pati</h1>
+                <p class="text-base text-gray-600 mt-2 mb-8">Temukan & lacak kesempatan karir Anda bersama kami.</p>
+                <div class="space-y-4">
+                    <div id="goToRegisterBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-blue-100 text-blue-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Daftar Pekerjaan</h2><p class="text-sm text-gray-500 mt-1">Isi formulir untuk melamar pekerjaan di lokasi yang tersedia.</p></div></div>
+                    <div id="goToCheckStatusBtn" class="menu-card flex items-start space-x-4 text-left"><div class="flex-shrink-0 bg-green-100 text-green-600 p-3 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div><div><h2 class="font-bold text-base text-gray-900">Cek Status Lamaran</h2><p class="text-sm text-gray-500 mt-1">Periksa status lamaran Anda menggunakan NIK KTP.</p></div></div>
+                </div>
+                <p class="text-xs text-gray-400 mt-10">&copy; 2024 Portal Karir. <a href="#" id="adminLoginLink" class="underline">Admin</a></p>
+            </div>
+        </div>
     </div>
 
-    <!-- Halaman Admin Login -->
     <div id="adminLoginPage" class="hidden-page">
         <div class="min-h-screen flex items-center justify-center p-4">
             <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-sm">
@@ -101,7 +95,6 @@
         </div>
     </div>
 
-    <!-- Halaman Panel Admin -->
     <div id="adminPanelPage" class="hidden-page">
         <div class="p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto">
             <div class="sm:flex sm:items-center sm:justify-between mb-6">
@@ -129,15 +122,13 @@
                         </tr>
                     </thead>
                     <tbody id="applicationsList">
-                        <!-- Data akan dimuat di sini oleh JavaScript -->
-                    </tbody>
+                        </tbody>
                 </table>
                 <div id="adminLoadingState" class="text-center p-10 text-gray-500"></div>
             </div>
         </div>
     </div>
 
-    <!-- Halaman Cek Status Pendaftaran -->
     <div id="statusCheckPage" class="hidden-page">
         <div class="min-h-screen flex items-center justify-center p-4">
             <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
@@ -148,11 +139,14 @@
                     <button id="checkStatusNikBtn" class="w-full bg-green-600 text-white font-semibold py-2 rounded-md hover:bg-green-700 text-sm">Cek Status</button>
                 </div>
                 <div id="statusResult" class="mt-6 border-t pt-6"></div>
+                <div id="notification-prompt" class="hidden-page mt-4 p-4 bg-gray-100 rounded-lg text-center">
+                    <p class="text-sm text-gray-700">Aktifkan notifikasi untuk mendapatkan pembaruan status lamaran Anda secara langsung.</p>
+                    <button id="enableNotificationsBtn" class="mt-2 w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 text-sm">Aktifkan Notifikasi</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Halaman Pemilihan Lokasi Kerja -->
     <div id="selectionPage" class="hidden-page">
         <div class="min-h-screen flex items-center justify-center p-4">
             <div class="bg-white p-4 my-4 mx-auto rounded-lg shadow-md w-full max-w-md">
@@ -193,7 +187,6 @@
         </div>
     </div>
 
-    <!-- Halaman Formulir Pendaftaran -->
     <div id="formPage" class="hidden-page">
         <div class="min-h-screen flex items-center justify-center p-4">
             <div class="bg-white p-3 my-2 mx-auto rounded-md shadow-sm w-full max-w-md ultracompact-font">
@@ -217,7 +210,6 @@
         </div>
     </div>
 
-    <!-- Halaman 3: Sukses Pendaftaran -->
     <div id="successPage" class="hidden-page">
         <div class="min-h-screen flex items-center justify-center p-4">
             <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md text-center">
@@ -234,12 +226,10 @@
         </div>
     </div>
 
-    <!-- Semua Modal (Pilihan, Kamera, Pratinjau) -->
     <div id="choiceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-40"><div class="bg-white rounded-lg shadow-xl w-full max-w-xs p-4"><h3 class="text-base font-semibold text-center mb-4">Pilih Sumber Gambar</h3><div class="space-y-2"><button id="galleryButton" class="w-full px-4 py-2 bg-blue-500 text-white rounded-md">Pilih dari Galeri</button><button id="cameraButton" class="w-full px-4 py-2 bg-green-500 text-white rounded-md">Ambil Foto Langsung</button><button id="cancelChoiceButton" class="w-full px-4 py-2 mt-4 bg-gray-200 text-gray-800 rounded-md">Batal</button></div></div></div>
     <div id="cameraModal" class="fixed inset-0 bg-black bg-opacity-75 flex-col items-center justify-center p-4 z-50"><video id="cameraFeed" class="w-full max-w-md h-auto rounded-md" playsinline></video><canvas id="cameraCanvas" class="hidden"></canvas><div class="flex space-x-4 mt-4"><button id="captureButton" class="px-6 py-2 bg-blue-600 text-white font-medium rounded-full">Jepret</button><button id="closeCameraButton" class="px-6 py-2 bg-gray-600 text-white font-medium rounded-full">Tutup</button></div></div>
     <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"><div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-full overflow-y-auto"><div class="p-4 border-b"><h2 class="text-lg font-bold">Harap pastikan data yang anda kirimkan benar</h2></div><div class="p-4 space-y-3 text-sm"><div id="previewTextData" class="space-y-1"></div><hr><h3 class="font-semibold text-base">Dokumen Terlampir</h3><div id="previewImageData" class="grid grid-cols-2 gap-2"><div><p class="label-ultracompact">Foto KTP</p><img id="modal-preview-fotoKTP" class="w-full h-auto rounded border bg-gray-100"></div><div><p class="label-ultracompact">Foto KK</p><img id="modal-preview-fotoKK" class="w-full h-auto rounded border bg-gray-100"></div><div><p class="label-ultracompact">Foto Ijazah</p><img id="modal-preview-fotoIjazah" class="w-full h-auto rounded border bg-gray-100"></div><div><p class="label-ultracompact">Foto Wajah</p><img id="modal-preview-fotoWajah" class="w-full h-auto rounded border bg-gray-100"></div></div></div><div class="p-3 bg-gray-50 border-t flex justify-end gap-2"><button id="editButton" class="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md">Edit Lagi</button><button id="sendButton" class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md">Kirim Sekarang</button></div></div></div>
     
-    <!-- Modal Detail Pelamar (Admin) -->
     <div id="adminDetailModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
             <div class="p-4 border-b flex justify-between items-center">
@@ -247,12 +237,10 @@
                 <button id="closeDetailModalBtn" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
             <div id="detailModalContent" class="p-6 space-y-4 overflow-y-auto">
-                <!-- Konten detail akan dimuat di sini -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- Modal QRIS Payment -->
     <div id="qrisModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-xs flex flex-col">
             <div class="p-4 rounded-t-lg" style="background-color: #DC2626;">
@@ -271,7 +259,6 @@
         </div>
     </div>
     
-    <!-- BARU: Modal untuk QRIS Ukuran Penuh -->
     <div id="fullQrisModal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-60">
         <button id="closeFullQrisBtn" class="absolute top-4 right-4 text-white text-5xl font-bold leading-none hover:text-gray-300 z-10">&times;</button>
         <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjzDPbhz4wHREgv0Eq3iy9lPdf5UtXd7pS24KL-Nc_FqT9LdRR8vF0ax_xk1l40lHg86_qpkKNWSOlp0WagxI0_rRXGeVTN7MU5jjHrFEipDfs0ysPNZDz2IWgjAUe92WDlZjR5Gx2E15xTzzElrygZCszZUP-Dps-db4O95ZSFD6GKV2Qkes5SYWTo1Lk/s1600/IMG_20250629_202856.jpg" alt="Full QR Code" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg">
@@ -282,6 +269,8 @@
         // --- Import Firebase ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getFirestore, collection, addDoc, query, where, getDocs, doc, updateDoc, orderBy, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        // BARU: Import untuk Messaging
+        import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js";
 
         // --- Konfigurasi Firebase ---
         const firebaseConfig = {
@@ -295,6 +284,9 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        // BARU: Inisialisasi Messaging
+        const messaging = getMessaging(app);
+
 
         // --- ELEMEN DOM ---
         const mainMenuPage = document.getElementById('mainMenuPage');
@@ -334,7 +326,9 @@
         const closeQrisModalBtn = document.getElementById('closeQrisModalBtn');
         const countdownTimer = document.getElementById('countdownTimer');
         
-        // --- ELEMEN DOM BARU ---
+        // --- ELEMEN DOM BARU UNTUK NOTIFIKASI ---
+        const notificationPrompt = document.getElementById('notification-prompt');
+        const enableNotificationsBtn = document.getElementById('enableNotificationsBtn');
         const qrisImage = document.getElementById('qrisImage');
         const fullQrisModal = document.getElementById('fullQrisModal');
         const closeFullQrisBtn = document.getElementById('closeFullQrisBtn');
@@ -370,6 +364,50 @@
             });
         });
         adminLoginLink.addEventListener('click', (e) => { e.preventDefault(); showPage(adminLoginPage); });
+
+        // --- FUNGSI NOTIFIKASI BARU ---
+        async function requestNotificationPermission() {
+            console.log('Requesting notification permission...');
+            setLoading(true, enableNotificationsBtn, 'Memproses...');
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                    
+                    // Dapatkan token FCM dengan VAPID key Anda
+                    const fcmToken = await getToken(messaging, { 
+                        vapidKey: 'BKqSCoK3u4XvrlfiENKpai18_YyiVcNarhfadssbzz0wG6KQgC4GZPphM6LZECsfpOqXjuHKxq4hfnOUBnSQ24A' 
+                    });
+
+                    if (fcmToken) {
+                        console.log('FCM Token:', fcmToken);
+                        const nik = nikInput.value.trim(); // Ambil NIK dari input
+                        if (nik) {
+                            const q = query(collection(db, "pendaftaran"), where("nik", "==", nik));
+                            const querySnapshot = await getDocs(q);
+                            if (!querySnapshot.empty) {
+                                const docId = querySnapshot.docs[0].id;
+                                const docRef = doc(db, "pendaftaran", docId);
+                                // Simpan token ke dokumen pendaftar
+                                await updateDoc(docRef, { fcmToken: fcmToken });
+                                console.log('FCM token saved to Firestore.');
+                                notificationPrompt.innerHTML = `<p class="text-green-600 text-sm font-semibold">✓ Notifikasi telah diaktifkan!</p>`;
+                            }
+                        }
+                    } else {
+                        console.log('No registration token available. Request permission to generate one.');
+                    }
+                } else {
+                    console.log('Unable to get permission to notify.');
+                }
+            } catch (err) {
+                console.error('An error occurred while retrieving token. ', err);
+            } finally {
+                setLoading(false, enableNotificationsBtn, 'Aktifkan Notifikasi');
+            }
+        }
+        enableNotificationsBtn.addEventListener('click', requestNotificationPermission);
+
 
         // --- FUNGSI ADMIN ---
         adminLoginBtn.addEventListener('click', () => {
@@ -701,6 +739,9 @@
             try {
                 const q = query(collection(db, "pendaftaran"), where("nik", "==", nik));
                 const querySnapshot = await getDocs(q);
+                
+                notificationPrompt.classList.add('hidden-page'); // Sembunyikan prompt default
+
                 if (querySnapshot.empty) {
                     statusResult.innerHTML = `<p class="text-red-500 text-center">NIK tidak ditemukan. Silakan mendaftar terlebih dahulu.</p>`;
                 } else {
@@ -814,6 +855,14 @@
                             </div>
                         `;
                         statusResult.innerHTML = trackerHTML + contentHTML;
+                    }
+
+                    // Logika untuk menampilkan prompt notifikasi
+                    if (!docData.fcmToken) {
+                        notificationPrompt.classList.remove('hidden-page');
+                    } else {
+                        notificationPrompt.innerHTML = `<p class="text-green-600 text-center text-sm font-semibold">✓ Notifikasi sudah aktif untuk perangkat ini.</p>`;
+                        notificationPrompt.classList.remove('hidden-page');
                     }
                 }
             } catch (error) {
