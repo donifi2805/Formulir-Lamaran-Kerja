@@ -1,59 +1,36 @@
-// Nama cache unik untuk versi aplikasi Anda
-const CACHE_NAME = 'stpk-cache-v1';
+// File: sw.js
 
-// Daftar file dan aset yang akan di-cache
-const urlsToCache = [
-  '/',
-  'index.html',
-  'pati512.png' 
-  // Aset eksternal seperti font dan css dari cdn tidak selalu bisa di-cache dengan andal,
-  // jadi kita fokus pada aset lokal untuk fungsionalitas offline dasar.
-];
+// Import skrip yang diperlukan untuk Firebase
+importScripts("https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js");
 
-// Event 'install': dipicu saat service worker pertama kali diinstal
-self.addEventListener('install', event => {
-  // Menunda event install sampai cache selesai dibuat
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cache dibuka');
-        // Menambahkan semua URL yang ditentukan ke dalam cache
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
+// Konfigurasi Firebase Anda (SAMA seperti di HTML Anda)
+const firebaseConfig = {
+    apiKey: "AIzaSyA2WEyWXYlk6L5XAlP1zg-oh5ZXL9ZT_rM",
+    authDomain: "formulir-pendaftaran-5e3ec.firebaseapp.com",
+    projectId: "formulir-pendaftaran-5e3ec",
+    storageBucket: "formulir-pendaftaran-5e3ec.appspot.com",
+    messagingSenderId: "785541508226",
+    appId: "1:785541508226:web:2a7481a71638cc9bccd89b",
+    measurementId: "G-WGHEPRLE5N"
+};
 
-// Event 'fetch': dipicu setiap kali halaman meminta sumber daya (misal: gambar, skrip)
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    // Mencari permintaan di dalam cache
-    caches.match(event.request)
-      .then(response => {
-        // Jika permintaan ditemukan di cache, kembalikan dari cache
-        if (response) {
-          return response;
-        }
-        // Jika tidak, lanjutkan dengan permintaan jaringan seperti biasa
-        return fetch(event.request);
-      }
-    )
-  );
-});
+// Inisialisasi Firebase
+firebase.initializeApp(firebaseConfig);
 
-// Event 'activate': dipicu saat service worker diaktifkan
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    // Mendapatkan semua nama cache yang ada
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          // Jika ada cache lama (tidak ada di whitelist), hapus cache tersebut
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+// Dapatkan instance Messaging
+const messaging = firebase.messaging();
+
+// Menangani notifikasi yang masuk saat aplikasi berada di latar belakang
+messaging.onBackgroundMessage(function(payload) {
+    console.log('[sw.js] Received background message ', payload);
+
+    // Kustomisasi notifikasi yang akan ditampilkan
+    const notificationTitle = payload.notification.title;
+    const notificationOptions = {
+        body: payload.notification.body,
+        icon: '/pati192.png' // Pastikan Anda punya ikon ini (mis: pati192.png) di direktori utama
+    };
+
+    self.registration.showNotification(notificationTitle, notificationOptions);
 });
